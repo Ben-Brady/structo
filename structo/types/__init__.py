@@ -1,12 +1,4 @@
-"""
-Structify
-"""
-
-__version__ = "0.1.0"
-
-from .serialise import serialize, deserialize
-from .t import Serializer, SerialiableObject, Format
-from .types import (
+from .primatives import (
     uint64_BE,
     uint64_LE,
     uint64,
@@ -33,17 +25,7 @@ from .types import (
     float32_BE,
     float32_LE,
     float32,
-
-    string,
-    array,
-    blob,
-    buffer,
-    list,
-    literal
 )
-from .utils import (
-    StructifyReader,
-    StructifyWriter,
-    serialize_to_bytes,
-    deserialize_from_bytes,
-)
+from .fixed import array, buffer
+from .dynamic import list, string, blob
+from .literal import literal

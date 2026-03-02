@@ -11,3 +11,8 @@ dynamic = ["version", "description"]
 
 [project.urls]
 Home = "https://nnilky.site"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+]

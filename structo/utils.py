@@ -1,6 +1,6 @@
 import typing as t
 import io
-from .types import (
+from . import (
     Format,
     SerialiableObject,
     uint8,
@@ -14,7 +14,7 @@ from .types import (
     float32,
     float64,
     blob,
-    string,
+    string
 )
 from .serialise import serialize, deserialize
 
@@ -122,7 +122,7 @@ class StructifyWriter:
         return self.write(float64, value)
 
     def write_blob(self, value: bytes):
-        return self.write(string, value)
+        return self.write(blob, value)
 
     def write_string(self, value: str):
         return self.write(string, value)
