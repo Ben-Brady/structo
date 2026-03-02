@@ -26,6 +26,6 @@ from .primatives import (
     float32_LE,
     float32,
 )
-from .fixed import array, buffer
-from .dynamic import list, string, blob
-from .literal import literal
+from .fixed import Array, Buffer
+from .dynamic import List, String, Blob
+from .literal import Literal

@@ -1,7 +1,7 @@
 import io
 import typing as t
 import annotationlib
-from .t import (
+from .basetypes import (
     Format, Serializer, SerialiableObject
 )
 
@@ -25,14 +25,13 @@ class SerialiableObjectSerializer(Serializer):
         return format(**attrs)
 
 
-def get_serializer(format: t.TypeAliasType) -> type[Serializer]:
+def get_serializer(format: Format) -> Serializer:
     if hasattr(format, "__value__"):
         format = format.__value__
 
     if t.get_origin(format) is t.Annotated:
         args = t.get_args(format)
-        serializers = [arg for arg in args if issubclass(arg, Serializer)]
-
+        serializers = [arg for arg in args if isinstance(arg, Serializer)]
         assert len(serializers) != 0, f"No serializers for {format} found"
         assert len(serializers) == 1, f"More than one serializers for {format} found"
         serializer = serializers[0]
@@ -40,7 +39,17 @@ def get_serializer(format: t.TypeAliasType) -> type[Serializer]:
         return serializer
 
     if isinstance(format, type) and issubclass(format, SerialiableObject):
-        return SerialiableObjectSerializer
+        return SerialiableObjectSerializer()
+
+    if format == int:
+        raise ValueError(f"No serializer for int, you need to use structo uint32, int32, etc instead")
+    if format == float:
+        raise ValueError(f"No serializer for float, you need to use structo float32 or float64 instead")
+    if format == bytes:
+        raise ValueError(f"No serializer for float, you need to use structor Buffer or Blob instead")
+    if format == list:
+        raise ValueError(f"No serializer for list, you need to use structo List or Array instead")
+
     raise NotImplementedError(f"No serializer for {format}")
 
 

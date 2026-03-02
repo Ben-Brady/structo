@@ -13,8 +13,8 @@ from . import (
     int64,
     float32,
     float64,
-    blob,
-    string
+    Blob,
+    String
 )
 from .serialise import serialize, deserialize
 
@@ -77,10 +77,10 @@ class StructifyReader:
         return self.read(float64)
 
     def read_blob(self) -> bytes:
-        return self.read(blob)
+        return self.read(Blob)
 
     def read_string(self) -> str:
-        return self.read(string)
+        return self.read(String)
 
 class StructifyWriter:
     buf: io.Writer
@@ -122,7 +122,7 @@ class StructifyWriter:
         return self.write(float64, value)
 
     def write_blob(self, value: bytes):
-        return self.write(blob, value)
+        return self.write(Blob, value)
 
     def write_string(self, value: str):
-        return self.write(string, value)
+        return self.write(String, value)

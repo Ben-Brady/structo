@@ -1,25 +1,22 @@
 import typing as t
 import io
 import struct
-from ..t import Serializer
+from ..basetypes import Serializer
 
-def struct_serializer[T](sformat: str, bytes: int) -> type[Serializer[T]]:
-    class StructSerializer(Serializer[T]):
-        @staticmethod
-        def length(_):
+def struct_serializer(sformat: str, bytes: int) -> Serializer:
+    class StructSerializer(Serializer):
+        def length(self, _):
             return bytes
 
-        @staticmethod
-        def write(buf: io.Writer, _: type, value: int):
+        def write(self, buf: io.Writer, _: type, value: int):
             data = struct.pack(sformat, value)
             return buf.write(data)
 
-        @staticmethod
-        def read(buf: io.Reader, _: type):
+        def read(self, buf: io.Reader, _: type):
             data = buf.read(bytes)
             return struct.unpack(sformat, data)[0]
 
-    return StructSerializer
+    return StructSerializer()
 
 
 type uint64_BE = t.Annotated[int, struct_serializer(">Q", bytes=8)]

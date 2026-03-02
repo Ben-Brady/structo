@@ -1,12 +1,11 @@
 import typing as t
 import io
 from .primatives import uint
-from ..t import Serializer, Format
+from ..basetypes import Serializer, Format
 from ..serialise import serialize, deserialize, read_uint
 
-class ListSerializer(Serializer[list]):
-    @staticmethod
-    def write(buf: io.Writer, format: Format, value: list):
+class ListSerializer(Serializer[list[t.Any]]):
+    def write(self, buf, format, value):
         tlength, tvalue = t.get_args(format)
 
         length = len(value)
@@ -14,8 +13,7 @@ class ListSerializer(Serializer[list]):
         for item in value:
             serialize(buf, tvalue, item)
 
-    @staticmethod
-    def read(buf: io.Reader, format: Format):
+    def read(self, buf, format):
         tlength, tvalue = t.get_args(format)
 
         length = read_uint(buf, tlength)
@@ -28,8 +26,7 @@ class ListSerializer(Serializer[list]):
 
 
 class StringSerializer(Serializer[str]):
-    @staticmethod
-    def write(buf: io.Writer, format: Format, value: str):
+    def write(self, buf, format, value):
         (tlength,) = t.get_args(format)
         data = value.encode("utf-8")
         length = len(data)
@@ -37,8 +34,7 @@ class StringSerializer(Serializer[str]):
         serialize(buf, tlength, length)
         buf.write(data)
 
-    @staticmethod
-    def read(buf: io.Reader, format: Format):
+    def read(self, buf, format):
         (tlength,) = t.get_args(format)
 
         length = deserialize(buf, tlength)
@@ -47,23 +43,21 @@ class StringSerializer(Serializer[str]):
 
 
 class BlobSerializer(Serializer[bytes]):
-    @staticmethod
-    def write(buf: io.Writer, format: Format, value: bytes):
+    def write(self, buf, format, value):
         (tlength,) = t.get_args(format)
 
         length = len(value)
         serialize(buf, tlength, length)
         buf.write(value)
 
-    @staticmethod
-    def read(buf: io.Reader, format: Format):
+    def read(self, buf, format):
         (tlength,) = t.get_args(format)
 
         length = deserialize(buf, tlength)
         data = buf.read(length)
         return data
 
-type blob[Length: uint] = t.Annotated[bytes, BlobSerializer]
+type Blob[Length: uint] = t.Annotated[bytes, BlobSerializer()]
 """
 **blob[Length: uint]**
 
@@ -75,7 +69,7 @@ A set of arbitrary bytes, prefixed with it's length
 ---
 """
 
-type string[Length] = t.Annotated[str, StringSerializer]
+type String[Length] = t.Annotated[str, StringSerializer()]
 """
 string[Length: uint]
 A string, prefixed with it's length
@@ -87,7 +81,7 @@ A string, prefixed with it's length
 ---
 """
 
-type list[Length, Value] = t.Annotated[list, ListSerializer]
+type List[Length, Value] = t.Annotated[list[Value], ListSerializer()]
 """
 list[Length: uint, Value: Serializable]
 A list of elements, prefixed with it's length

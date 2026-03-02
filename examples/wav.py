@@ -1,18 +1,18 @@
-from structo import uint16_LE, uint32_LE, SerialiableObject, literal
+from structo import uint16_LE, uint32_LE, SerialiableObject, Literal
 
 class Header(SerialiableObject):
-    chunk_id: literal[b"RIFF"]
+    chunk_id: Literal[b"RIFF"]
     chunk_size: uint32_LE
-    format: literal[b"WAVE"]
+    format: Literal[b"WAVE"]
 
 
 class FormatChunkHeader(SerialiableObject):
-    id: literal[b"fmt "]
+    id: Literal[b"fmt "]
     size: uint32_LE
 
 
 class DataChunkHeader(SerialiableObject):
-    id: literal[b"data"]
+    id: Literal[b"data"]
     size: uint32_LE
 
 
