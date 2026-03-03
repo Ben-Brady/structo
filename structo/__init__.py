@@ -2,7 +2,7 @@
 Structify
 """
 
-__version__ = "0.1.0"
+__version__ = "0.0.2"
 
 from .object import SerializableObject
 from .serialise import write_serializable, read_serializable
