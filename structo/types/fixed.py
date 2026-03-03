@@ -1,13 +1,15 @@
 import typing as t
-from ..basetypes import Serializer
-from ..serialise import serialize, deserialize, get_serializer
+from ..serializer import Serializer
+from ..serialise import write_serializable, read_serializable, get_serializer
 
 
 class FixedBlobSerializer(Serializer[bytes]):
     def write(self, buf, format, value):
         (length,) = t.get_args(format)
 
-        assert len(value) == length, f"recieved data with {len(value)} length, expected {length}"
+        assert (
+            len(value) == length
+        ), f"recieved data with {len(value)} length, expected {length}"
         buf.write(value)
 
     def read(self, buf, format):
@@ -23,30 +25,31 @@ class FixedBlobSerializer(Serializer[bytes]):
 
 class ArraySerializer(Serializer[list]):
     def write(self, buf, format, value):
-        (length, tvalue) = t.get_args(format)
+        length, tvalue = t.get_args(format)
 
-        assert len(value) == length, f"recieved array with {len(value)} length, expected {length}"
+        assert (
+            len(value) == length
+        ), f"recieved array with {len(value)} length, expected {length}"
         for item in value:
-            serialize(buf, tvalue, item)
+            write_serializable(buf, tvalue, item)
 
     def read(self, buf, format):
-        (length, tvalue) = t.get_args(format)
+        length, tvalue = t.get_args(format)
 
         items = []
         for _ in range(length):
-            items.append(deserialize(buf, tvalue))
+            items.append(read_serializable(buf, tvalue))
 
         return items
 
     def length(self, format):
-        (length, tvalue) = t.get_args(format)
+        length, tvalue = t.get_args(format)
 
         element_length = get_serializer(tvalue).length(tvalue)
         if element_length is None:
             return None
         else:
             return element_length * length
-
 
 
 type Buffer[Length] = t.Annotated[bytes, FixedBlobSerializer]

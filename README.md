@@ -2,7 +2,10 @@
 
 ```py
 
+```
 
-## TODO
+## Examples
 
-- Fixed length of bits
+See ./examples for example usage
+
+

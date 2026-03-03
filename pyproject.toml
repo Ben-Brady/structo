@@ -14,5 +14,6 @@ Home = "https://nnilky.site"
 
 [dependency-groups]
 dev = [
+    "black>=26.1.0",
     "pytest>=9.0.2",
 ]

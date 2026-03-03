@@ -2,40 +2,39 @@ import typing as t
 import io
 from dataclasses import dataclass
 import annotationlib
-from abc import ABC
-
-type Format = type | t.TypeAliasType
-
-class Serializer[T]:
-    def length(self, format: Format) -> int | None:
-        return None
-
-    def write(self, buf: io.Writer, format: Format, value: T): ...
-
-    def read(self, buf: io.Reader, format: Format) -> T: ...
 
 
-class _SerialiableObjectMeta(type):
+class SerializableObjectMeta(type):
     def __new__(cls, name, bases, dct):
+        from .serialise import get_serializer
+
         new_class = super().__new__(cls, name, bases, dct)
         annotate = annotationlib.get_annotate_from_class_namespace(dct)
         if annotate:
-            print(annotate(annotationlib.Format.VALUE))
+            attrs = annotate(annotationlib.Format.VALUE_WITH_FAKE_GLOBALS)
+            for key, value in attrs.items():
+                try:
+                    get_serializer(value)
+                except Exception as e:
+                    raise ValueError(
+                        f"Invalid attribute defintion for {name}.{key}"
+                    ) from e
+
         return dataclass(new_class)  # type: ignore
 
 
 @t.dataclass_transform()
-class SerialiableObject(metaclass=_SerialiableObjectMeta):
+class SerializableObject(metaclass=SerializableObjectMeta):
     @classmethod
     def read(cls, buf: io.Reader) -> t.Self:
-        from .serialise import deserialize
+        from .serialise import read_serializable
 
-        return deserialize(buf, cls)
+        return read_serializable(buf, cls)
 
     def write(self, buf: io.Writer):
-        from .serialise import serialize
+        from .serialise import write_serializable
 
-        serialize(buf, type(self), self)
+        write_serializable(buf, type(self), self)
 
     @classmethod
     def from_bytes(cls, data: bytes) -> t.Self:

@@ -1,7 +1,11 @@
-from structo import SerialiableObject, Serializer, serialize_to_bytes, deserialize_from_bytes
+from structo import Serializer, serialize_to_bytes, deserialize_from_bytes
+from dataclasses import dataclass
 import typing as t
 
-class Flags(SerialiableObject):
+# We don't inherit from SerialiableObject
+# since we're using a custom serializer
+@dataclass
+class Flags:
     flag_a: bool
     flag_b: bool
     flag_c: bool
@@ -36,7 +40,7 @@ class FlagsSerialiser(Serializer[Flags]):
             flag_c=flag_c,
         )
 
-type flags_datatype = t.Annotated[Flags, FlagsSerialiser]
+type FlagsDatatype = t.Annotated[Flags, FlagsSerialiser]
 
 
 value = Flags(

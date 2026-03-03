@@ -1,6 +1,5 @@
 import typing as t
-from ..basetypes import Serializer
-from ..serialise import serialize, deserialize, get_serializer
+from ..serializer import Serializer
 
 
 class LiteralSerializer(Serializer[bytes]):
@@ -21,8 +20,7 @@ class LiteralSerializer(Serializer[bytes]):
         return len(tvalue)
 
 
-
-type Literal[Value] = t.Annotated[bytes, LiteralSerializer]
+type Literal[Value] = t.Annotated[bytes, LiteralSerializer()]
 """
 **buffer[Value: bytes]**
 
@@ -30,7 +28,7 @@ A literal bytes value
 
 > Value: The literal value
 
-**Example**: `literal[b"mp4 "]`
+**Example**: `literal[b"mp4"]`
 
 ---
 """

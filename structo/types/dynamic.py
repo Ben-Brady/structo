@@ -1,17 +1,18 @@
 import typing as t
 import io
 from .primatives import uint
-from ..basetypes import Serializer, Format
-from ..serialise import serialize, deserialize, read_uint
+from ..serializer import Serializer, Format
+from ..serialise import write_serializable, read_serializable, read_uint
+
 
 class ListSerializer(Serializer[list[t.Any]]):
     def write(self, buf, format, value):
         tlength, tvalue = t.get_args(format)
 
         length = len(value)
-        serialize(buf, tlength, length)
+        write_serializable(buf, tlength, length)
         for item in value:
-            serialize(buf, tvalue, item)
+            write_serializable(buf, tvalue, item)
 
     def read(self, buf, format):
         tlength, tvalue = t.get_args(format)
@@ -19,7 +20,7 @@ class ListSerializer(Serializer[list[t.Any]]):
         length = read_uint(buf, tlength)
         values = []
         for _ in range(length):
-            value = deserialize(buf, tvalue)
+            value = read_serializable(buf, tvalue)
             values.append(value)
 
         return values
@@ -31,13 +32,13 @@ class StringSerializer(Serializer[str]):
         data = value.encode("utf-8")
         length = len(data)
 
-        serialize(buf, tlength, length)
+        write_serializable(buf, tlength, length)
         buf.write(data)
 
     def read(self, buf, format):
         (tlength,) = t.get_args(format)
 
-        length = deserialize(buf, tlength)
+        length = read_serializable(buf, tlength)
         data = buf.read(length)
         return data.decode("utf-8")
 
@@ -47,15 +48,16 @@ class BlobSerializer(Serializer[bytes]):
         (tlength,) = t.get_args(format)
 
         length = len(value)
-        serialize(buf, tlength, length)
+        write_serializable(buf, tlength, length)
         buf.write(value)
 
     def read(self, buf, format):
         (tlength,) = t.get_args(format)
 
-        length = deserialize(buf, tlength)
+        length = read_serializable(buf, tlength)
         data = buf.read(length)
         return data
+
 
 type Blob[Length: uint] = t.Annotated[bytes, BlobSerializer()]
 """
@@ -94,4 +96,3 @@ A list of elements, prefixed with it's length
 
 ---
 """
-

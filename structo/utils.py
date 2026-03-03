@@ -2,7 +2,7 @@ import typing as t
 import io
 from . import (
     Format,
-    SerialiableObject,
+    SerializableObject,
     uint8,
     uint16,
     uint32,
@@ -14,37 +14,37 @@ from . import (
     float32,
     float64,
     Blob,
-    String
+    String,
 )
-from .serialise import serialize, deserialize
+from .serialise import write_serializable, read_serializable
 
 
 def serialize_to_bytes(format: Format, value: t.Any) -> bytes:
     buf = io.BytesIO()
-    serialize(buf, format, value)
+    write_serializable(buf, format, value)
     buf.seek(0)
     return buf.read()
 
 
 def deserialize_from_bytes(format: Format, data: bytes) -> t.Any:
     buf = io.BytesIO(data)
-    return deserialize(buf, format)
+    return read_serializable(buf, format)
 
 
-class StructifyReader:
+class StructoReader:
     reader: io.Reader
 
     def __init__(self, reader: io.Reader) -> None:
         self.reader = reader
 
     @t.overload
-    def read[T: SerialiableObject](self, format: type[T]) -> T: ...
+    def read[T: SerializableObject](self, format: type[T]) -> T: ...
 
     @t.overload
     def read(self, format: Format) -> t.Any: ...
 
     def read(self, format: Format) -> t.Any:
-        return deserialize(self.reader, format)
+        return read_serializable(self.reader, format)
 
     def read_uint8(self) -> int:
         return self.read(uint8)
@@ -82,6 +82,7 @@ class StructifyReader:
     def read_string(self) -> str:
         return self.read(String)
 
+
 class StructifyWriter:
     buf: io.Writer
 
@@ -89,7 +90,7 @@ class StructifyWriter:
         self.buf = buf
 
     def write(self, format: Format, value: t.Any) -> t.Any:
-        return serialize(self.buf, format, value)
+        return write_serializable(self.buf, format, value)
 
     def write_uint8(self, value: int):
         return self.write(uint8, value)
