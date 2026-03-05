@@ -29,3 +29,4 @@ from .primatives import (
 from .fixed import Array, Buffer
 from .dynamic import List, String, Blob
 from .literal import Literal
+from .union import Union, UnionVariant

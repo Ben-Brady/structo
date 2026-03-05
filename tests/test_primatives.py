@@ -1,17 +1,10 @@
 import typing as t
 from dataclasses import dataclass
+from utils import test
 
 import pytest
 import structo as st
-from structo import (
-    SerializableObject,
-    deserialize_from_bytes,
-    uint16,
-    uint16_LE,
-    uint16_BE,
-    serialize_to_bytes,
-)
-from utils import assert_serialises_correctly, assert_equal
+from structo import serialize_to_bytes
 
 
 testdata: list[tuple[st.Format, t.Any, bytes]] = []
@@ -23,8 +16,6 @@ class EncodeTests[T]:
     tests: list[tuple[T, bytes]]
 
 
-testdata.append((st.Literal[b"foo"], b"foo", b"foo"))
-
 testsets: list[EncodeTests] = [
     EncodeTests(
         datatype=st.uint8,
@@ -35,7 +26,7 @@ testsets: list[EncodeTests] = [
         ],
     ),
     EncodeTests(
-        datatype=st.Literal,
+        datatype=st.Literal["b"],
         tests=[
             (1, bytes([1])),
             (100, bytes([100])),
@@ -97,6 +88,7 @@ for testset in binary_testsets:
         testdata.append((testset.le, value, bytes(reversed(expected))))
 
 
+@test("Encode Decode Test")
 @pytest.mark.parametrize("datatype,value,expected", testdata)
 def test_encode_primitives(datatype, value, expected):
     actual = serialize_to_bytes(datatype, value)

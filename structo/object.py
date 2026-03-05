@@ -3,10 +3,11 @@ import io
 from dataclasses import dataclass
 import annotationlib
 
+from .serialise import get_serializer, write_serializable, read_serializable
+
 
 class SerializableObjectMeta(type):
     def __new__(cls, name, bases, dct):
-        from .serialise import get_serializer
 
         new_class = super().__new__(cls, name, bases, dct)
         annotate = annotationlib.get_annotate_from_class_namespace(dct)
@@ -27,12 +28,10 @@ class SerializableObjectMeta(type):
 class SerializableObject(metaclass=SerializableObjectMeta):
     @classmethod
     def read(cls, buf: io.Reader) -> t.Self:
-        from .serialise import read_serializable
 
         return read_serializable(buf, cls)
 
     def write(self, buf: io.Writer):
-        from .serialise import write_serializable
 
         write_serializable(buf, type(self), self)
 

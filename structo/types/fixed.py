@@ -18,7 +18,7 @@ class FixedBlobSerializer(Serializer[bytes]):
         data = buf.read(length)
         return data
 
-    def length(self, format):
+    def sizeof(self, format):
         (length,) = t.get_args(format)
         return length
 
@@ -42,17 +42,17 @@ class ArraySerializer(Serializer[list]):
 
         return items
 
-    def length(self, format):
+    def sizeof(self, format):
         length, tvalue = t.get_args(format)
 
-        element_length = get_serializer(tvalue).length(tvalue)
+        element_length = get_serializer(tvalue).sizeof(tvalue)
         if element_length is None:
             return None
         else:
             return element_length * length
 
 
-type Buffer[Length] = t.Annotated[bytes, FixedBlobSerializer]
+type Buffer[Length] = t.Annotated[bytes, FixedBlobSerializer()]
 """
 **buffer[Length: int]**
 
@@ -66,7 +66,7 @@ A fixed length bytes
 """
 
 
-type Array[Length, Value] = t.Annotated[list[Value], ArraySerializer]
+type Array[Length, Value] = t.Annotated[list[Value], ArraySerializer()]
 """
 **array[Length: int, Value: Serializable]**
 

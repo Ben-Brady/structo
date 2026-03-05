@@ -1,29 +1,12 @@
 import io
 import typing as t
-import annotationlib
 from .serializer import Format, Serializer
 
 
 def get_serializer(format: Format) -> Serializer:
     from .object import SerializableObject
 
-    class SerialiableObjectSerializer(Serializer):
-        @staticmethod
-        def write(buf: io.Writer, format: type, value: SerializableObject):
-            annotations = annotationlib.get_annotations(format)
-            for field_key, field_format in annotations.items():
-                field_value = getattr(value, field_key)
-                write_serializable(buf, field_format, field_value)
-
-        @staticmethod
-        def read(buf: io.Reader, format: type) -> SerializableObject:
-            annotations = annotationlib.get_annotations(format)
-            attrs = {}
-            for field_key, field_format in annotations.items():
-                field_value = read_serializable(buf, field_format)
-                attrs[field_key] = field_value
-
-            return format(**attrs)
+    # Must be lazyily imported due to circular imports
 
     if hasattr(format, "__value__"):
         format = format.__value__
@@ -38,8 +21,11 @@ def get_serializer(format: Format) -> Serializer:
         return serializer
 
     if isinstance(format, type) and issubclass(format, SerializableObject):
+        from .types.object import SerialiableObjectSerializer
+
         return SerialiableObjectSerializer()
 
+    # Nicely formatted errors:
     if format == int:
         raise ValueError(
             f"No serializer for int, you need to use structo.int32, structo.int32 or similar instead"
@@ -66,6 +52,10 @@ def write_serializable(buf: io.Writer, format: Format, value: t.Any):
 
 def read_serializable(buf: io.Reader, format: Format) -> t.Any:
     return get_serializer(format).read(buf, format)
+
+
+def sizeof(format: Format) -> int | None:
+    return get_serializer(format).sizeof(format)
 
 
 def read_uint(buf: io.Reader, format: Format) -> int:

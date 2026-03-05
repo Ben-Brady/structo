@@ -2,6 +2,7 @@ from structo import Serializer, serialize_to_bytes, deserialize_from_bytes
 from dataclasses import dataclass
 import typing as t
 
+
 # We don't inherit from SerialiableObject
 # since we're using a custom serializer
 @dataclass
@@ -10,14 +11,13 @@ class Flags:
     flag_b: bool
     flag_c: bool
 
+
 class FlagsSerialiser(Serializer[Flags]):
     # This is optional, but allows for size calculations
-    @staticmethod
-    def length(format):
+    def sizeof(self, format):
         return 1
 
-    @staticmethod
-    def write(buf, format, value):
+    def write(self, buf, format, value):
         byte = 0
         if value.flag_a:
             byte += 1 << 0
@@ -28,8 +28,7 @@ class FlagsSerialiser(Serializer[Flags]):
 
         byte = buf.write(bytes([byte]))
 
-    @staticmethod
-    def read(buf, format):
+    def read(self, buf, format):
         byte = buf.read(1)[0]
         flag_a = ((byte >> 0) & 1) != 0
         flag_b = ((byte >> 1) & 1) != 0
@@ -40,7 +39,8 @@ class FlagsSerialiser(Serializer[Flags]):
             flag_c=flag_c,
         )
 
-type FlagsDatatype = t.Annotated[Flags, FlagsSerialiser]
+
+type FlagsDatatype = t.Annotated[Flags, FlagsSerialiser()]
 
 
 value = Flags(
@@ -48,7 +48,6 @@ value = Flags(
     flag_b=True,
     flag_c=False,
 )
-output = serialize_to_bytes(flags_datatype, value)
+output = serialize_to_bytes(FlagsDatatype, value)
 print(output)
-print(deserialize_from_bytes(flags_datatype, output))
-
+print(deserialize_from_bytes(FlagsDatatype, output))

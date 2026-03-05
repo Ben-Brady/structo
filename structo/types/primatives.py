@@ -6,7 +6,7 @@ from ..serializer import Serializer
 
 def struct_serializer(sformat: str, bytes: int) -> Serializer:
     class StructSerializer(Serializer):
-        def length(self, _):
+        def sizeof(self, _):
             return bytes
 
         def write(self, buf: io.Writer, _: type, value: int):

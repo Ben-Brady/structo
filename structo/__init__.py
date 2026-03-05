@@ -2,10 +2,10 @@
 Structify
 """
 
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 
+from .serialise import write_serializable, read_serializable, sizeof
 from .object import SerializableObject
-from .serialise import write_serializable, read_serializable
 from .serializer import Serializer, Format
 from .types import (
     uint64_BE,
@@ -39,7 +39,9 @@ from .types import (
     List,
     String,
     Blob,
-    Literal
+    Literal,
+    Union,
+    UnionVariant,
 )
 from .utils import (
     StructoReader,

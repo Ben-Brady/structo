@@ -19,16 +19,14 @@ class Post(SerializableObject):
 
 
 class PostsSerialiser(Serializer[t.Iterable[Post]]):
-    @staticmethod
-    def write(buf, format, value):
+    def write(self, buf, format, value):
         for item in value:
             buf.write(bytes([255]))
             write_serializable(buf, Post, item)
 
         buf.write(bytes([0]))
 
-    @staticmethod
-    def read(buf, format):
+    def read(self, buf, format):
         while True:
             continue_byte = buf.read(1)[0]
             if continue_byte == 0:

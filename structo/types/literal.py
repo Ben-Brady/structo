@@ -1,34 +1,52 @@
 import typing as t
+import types
 from ..serializer import Serializer
 
 
 class LiteralSerializer(Serializer[bytes]):
+    value: bytes
+
+    def __init__(self, value: t.TypeVar) -> None:
+        print(value)
+        print(t.get_origin(value))
+        print(t.get_args(value))
+        print(t.evaluate_forward_ref(value))
+        assert (
+            value is None
+        ), "Literal must have a bytes parameter, e.g. Literal[b'foo']"
+        assert isinstance(
+            value, bytes
+        ), "Literal parameter must be type bytes, e.g. Literal[b'foo']"
+
     def write(self, buf, format, value):
-        (tvalue,) = t.get_args(format)
-        assert value == tvalue, f"expected {tvalue}, recieved {value}"
-        buf.write(value)
+        assert value == self.value, f"expected {self.value}, recieved {value}"
+        buf.write(self.value)
 
     def read(self, buf, format):
-        (tvalue,) = t.get_args(format)
+        value = buf.read(len(self.value))
+        assert value == self.value, f"expected {self.value}, recieved {value}"
+        return self.value
 
-        value = buf.read(len(tvalue))
-        assert value == tvalue, f"expected {tvalue}, recieved {value}"
-        return value
-
-    def length(self, format):
-        (tvalue,) = t.get_args(format)
-        return len(tvalue)
+    def sizeof(self, format):
+        return len(self.value)
 
 
-type Literal[Value] = t.Annotated[bytes, LiteralSerializer()]
-"""
-**buffer[Value: bytes]**
+type _Literal[Value] = t.Annotated[bytes, LiteralSerializer(Value)]
 
-A literal bytes value
 
-> Value: The literal value
+class Literal(bytes):
+    """
+    **buffer[Value: bytes]**
 
-**Example**: `literal[b"mp4"]`
+    A literal bytes value
 
----
-"""
+    > Value: The literal value
+
+    **Example**: `literal[b"mp4"]`
+
+    ---
+    """
+
+    @classmethod
+    def __class_getitem__(cls, value: t.Any):
+        return _Literal[bytes]

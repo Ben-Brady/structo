@@ -1,7 +1,6 @@
 import typing as t
-import io
 from .primatives import uint
-from ..serializer import Serializer, Format
+from ..serializer import Serializer
 from ..serialise import write_serializable, read_serializable, read_uint
 
 
