@@ -7,9 +7,9 @@ class List[T](Serializer[list[T]]):
     value_type: Serializer[T]
     length_type: Serializer[int]
 
-    def __init__(self, value_type: Serializer[T], length_type: Serializer[int]) -> None:
-        self.value_type = value_type
+    def __init__(self, length_type: Serializer[int], value_type: Serializer[T]) -> None:
         self.length_type = length_type
+        self.value_type = value_type
 
     def write(self, buf, value):
         length = len(value)
