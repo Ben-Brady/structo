@@ -1,19 +1,34 @@
 import io
 import annotationlib
-from ..serializer import Serializer, Format
+
+from ..serializer import Serializer
 from ..object import SerializableObject
+from ..serialise import get_serializer
 
 
-# Has to be lazy due to circular imports
-class SerialiableObjectSerializer(Serializer):
-    def sizeof(self, format: Format) -> int | None:
-        from ..serialise import sizeof
+class ObjectSerializer[T: SerializableObject](Serializer[T]):
+    _annotations: dict[str, Serializer] = {}
+    _type: type
 
-        annotations = annotationlib.get_annotations(format)
+    def __init__(self, type: type[T]) -> None:
+        annotations: dict[str, Serializer] = {}
+        self._type = type
+
+        attrs = annotationlib.get_annotations(type)
+        for key, value in attrs.items():
+            try:
+                annotations[key] = get_serializer(value)
+            except Exception as e:
+                raise ValueError(
+                    f"Invalid attribute defintion for {type.__name__}.{key}"
+                ) from e
+
+        self._annotations = annotations
+
+    def sizeof(self) -> int | None:
         total_size = 0
-        for field_key, field_format in annotations.items():
-            field_size = sizeof(field_format)
-            print(field_size)
+        for serializer in self._annotations.values():
+            field_size = serializer.sizeof()
             if field_size is None:
                 return None
             else:
@@ -21,21 +36,16 @@ class SerialiableObjectSerializer(Serializer):
 
         return total_size
 
-    def write(self, buf: io.Writer, format: type, value: SerializableObject):
-        from ..serialise import write_serializable
-
-        annotations = annotationlib.get_annotations(format)
-        for field_key, field_format in annotations.items():
+    def write(self, buf: io.Writer, value: T):
+        for field_key, field_format in self._annotations.items():
             field_value = getattr(value, field_key)
-            write_serializable(buf, field_format, field_value)
+            field_format.write(buf, field_value)
 
-    def read(self, buf: io.Reader, format: type) -> SerializableObject:
-        from ..serialise import read_serializable
-
-        annotations = annotationlib.get_annotations(format)
+    def read(self, buf: io.Reader) -> T:
         attrs = {}
-        for field_key, field_format in annotations.items():
-            field_value = read_serializable(buf, field_format)
+
+        for field_key, field_format in self._annotations.items():
+            field_value = field_format.read(buf)
             attrs[field_key] = field_value
 
-        return format(**attrs)
+        return self._type(**attrs)

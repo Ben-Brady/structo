@@ -1,34 +1,19 @@
-import typing as t
-from .primatives import uint
 from ..serializer import Serializer
-from ..serialise import write_serializable, read_serializable, read_uint
 
 
+class Blob(Serializer[bytes]):
+    "A set of arbitrary bytes, prefixed with it's length"
 
-class BlobSerializer(Serializer[bytes]):
-    def write(self, buf, format, value):
-        (tlength,) = t.get_args(format)
+    length_type: Serializer[int]
 
-        length = len(value)
-        write_serializable(buf, tlength, length)
+    def __init__(self, length_type: Serializer[int]) -> None:
+        self.length_type = length_type
+
+    def write(self, buf, value):
+        self.length_type.write(buf, len(value))
         buf.write(value)
 
-    def read(self, buf, format):
-        (tlength,) = t.get_args(format)
-
-        length = read_serializable(buf, tlength)
+    def read(self, buf):
+        length = self.length_type.read(buf)
         data = buf.read(length)
         return data
-
-
-type Blob[Length: uint] = t.Annotated[bytes, BlobSerializer()]
-"""
-**blob[Length: uint]**
-
-A set of arbitrary bytes, prefixed with it's length
-
-> Length: The integer type used to store the length
-
-**Example**: `blob[uint32]`
----
-"""

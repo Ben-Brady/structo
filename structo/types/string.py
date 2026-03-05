@@ -1,34 +1,21 @@
 import typing as t
-from .primatives import uint
 from ..serializer import Serializer
-from ..serialise import write_serializable, read_serializable, read_uint
 
-class StringSerializer(Serializer[str]):
-    def write(self, buf, format, value):
-        (tlength,) = t.get_args(format)
+
+class String(Serializer[str]):
+    "A unicode string, prefixed with it's byte length"
+
+    length_type: Serializer[int]
+
+    def __init__(self, length_type: Serializer[int]) -> None:
+        self.length_type = length_type
+
+    def write(self, buf, value):
         data = value.encode("utf-8")
-        length = len(data)
-
-        write_serializable(buf, tlength, length)
+        self.length_type.write(buf, len(data))
         buf.write(data)
 
-    def read(self, buf, format):
-        (tlength,) = t.get_args(format)
-
-        length = read_serializable(buf, tlength)
+    def read(self, buf):
+        length = self.length_type.read(buf)
         data = buf.read(length)
         return data.decode("utf-8")
-
-
-
-type String[Length] = t.Annotated[str, StringSerializer()]
-"""
-string[Length: uint]
-A string, prefixed with it's length
-
-> Length: The integer type used to store the length
-
-**Example**: `string[uint32]`
-
----
-"""

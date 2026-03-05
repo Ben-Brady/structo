@@ -1,52 +1,30 @@
-import typing as t
-import types
 from ..serializer import Serializer
 
 
-class LiteralSerializer(Serializer[bytes]):
-    value: bytes
+class Literal(Serializer[bytes]):
+    values: list[bytes]
+    _length: int
 
-    def __init__(self, value: t.TypeVar) -> None:
-        print(value)
-        print(t.get_origin(value))
-        print(t.get_args(value))
-        print(t.evaluate_forward_ref(value))
-        assert (
-            value is None
-        ), "Literal must have a bytes parameter, e.g. Literal[b'foo']"
-        assert isinstance(
-            value, bytes
-        ), "Literal parameter must be type bytes, e.g. Literal[b'foo']"
+    def __init__(self, *values: bytes) -> None:
+        assert len(values) > 0, "foo"
+        length = len(values[0])
 
-    def write(self, buf, format, value):
-        assert value == self.value, f"expected {self.value}, recieved {value}"
-        buf.write(self.value)
+        for value in values:
+            assert (
+                len(value) == length
+            ), f"All values in structo.Literal have to be the same length, expected {value} to be length {length}"
 
-    def read(self, buf, format):
-        value = buf.read(len(self.value))
-        assert value == self.value, f"expected {self.value}, recieved {value}"
-        return self.value
+        self._length = length
+        self.values = list(values)
 
-    def sizeof(self, format):
-        return len(self.value)
+    def write(self, buf, value):
+        assert value in self.values, f"{value} not in {b", ".join(self.values)}"
+        buf.write(self.values)
 
+    def read(self, buf):
+        value = buf.read(self._length)
+        assert value in self.values, f"{value} not in {b", ".join(self.values)}"
+        return value
 
-type _Literal[Value] = t.Annotated[bytes, LiteralSerializer(Value)]
-
-
-class Literal(bytes):
-    """
-    **buffer[Value: bytes]**
-
-    A literal bytes value
-
-    > Value: The literal value
-
-    **Example**: `literal[b"mp4"]`
-
-    ---
-    """
-
-    @classmethod
-    def __class_getitem__(cls, value: t.Any):
-        return _Literal[bytes]
+    def sizeof(self):
+        return self._length

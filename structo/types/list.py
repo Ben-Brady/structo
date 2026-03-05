@@ -1,39 +1,27 @@
-import typing as t
-from .primatives import uint
 from ..serializer import Serializer
-from ..serialise import write_serializable, read_serializable, read_uint
 
 
-class ListSerializer(Serializer[list[t.Any]]):
-    def write(self, buf, format, value):
-        tlength, tvalue = t.get_args(format)
+class List[T](Serializer[list[T]]):
+    "A list of items, prefixed with it's length"
 
+    value_type: Serializer[T]
+    length_type: Serializer[int]
+
+    def __init__(self, value_type: Serializer[T], length_type: Serializer[int]) -> None:
+        self.value_type = value_type
+        self.length_type = length_type
+
+    def write(self, buf, value):
         length = len(value)
-        write_serializable(buf, tlength, length)
+        self.length_type.write(buf, length)
         for item in value:
-            write_serializable(buf, tvalue, item)
+            self.value_type.write(buf, item)
 
-    def read(self, buf, format):
-        tlength, tvalue = t.get_args(format)
-
-        length = read_uint(buf, tlength)
+    def read(self, buf):
+        length = self.length_type.read(buf)
         values = []
         for _ in range(length):
-            value = read_serializable(buf, tvalue)
+            value = self.value_type.read(buf)
             values.append(value)
 
         return values
-
-type List[Length, Value] = t.Annotated[list[Value], ListSerializer()]
-"""
-list[Length: uint, Value: Serializable]
-A list of elements, prefixed with it's length
-
-> Length: The integer type used to store the length
-
-> Value: The value to store in the array
-
-**Example**: `list[uint16, float64]`
-
----
-"""

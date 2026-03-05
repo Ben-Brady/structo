@@ -4,9 +4,7 @@ Structify
 
 __version__ = "0.0.3"
 
-from .serialise import write_serializable, read_serializable, sizeof
-from .object import SerializableObject
-from .serializer import Serializer, Format
+from .serializer import Serializer
 from .types import (
     uint64_BE,
     uint64_LE,
@@ -40,12 +38,10 @@ from .types import (
     String,
     Blob,
     Literal,
-    Union,
-    UnionVariant,
+    ObjectSerializer,
 )
+from .object import SerializableObject
 from .utils import (
     StructoReader,
     StructifyWriter,
-    serialize_to_bytes,
-    deserialize_from_bytes,
 )

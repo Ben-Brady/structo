@@ -1,47 +1,58 @@
-import typing as t
 import io
-from dataclasses import dataclass
 import annotationlib
+import typing as t
+from dataclasses import dataclass
 
-from .serialise import get_serializer, write_serializable, read_serializable
+from .serializer import Serializer
+from .serialise import get_serializer
 
 
 class SerializableObjectMeta(type):
     def __new__(cls, name, bases, dct):
+        new_class = t.cast(type, super().__new__(cls, name, bases, dct))
+        if name == "SerializableObject":
+            return new_class
 
-        new_class = super().__new__(cls, name, bases, dct)
         annotate = annotationlib.get_annotate_from_class_namespace(dct)
+        _annotations: dict[str, Serializer] = {}
+
         if annotate:
             attrs = annotate(annotationlib.Format.VALUE_WITH_FAKE_GLOBALS)
             for key, value in attrs.items():
                 try:
-                    get_serializer(value)
+                    serializer = get_serializer(value)
+                    _annotations[key] = serializer
                 except Exception as e:
                     raise ValueError(
                         f"Invalid attribute defintion for {name}.{key}"
                     ) from e
 
-        return dataclass(new_class)  # type: ignore
+        return t.cast(SerializableObject, dataclass(new_class))
 
 
+# This is very messed up since we
 @t.dataclass_transform()
 class SerializableObject(metaclass=SerializableObjectMeta):
     @classmethod
-    def read(cls, buf: io.Reader) -> t.Self:
+    def serializer(cls) -> Serializer[t.Self]:
+        from .types import ObjectSerializer
 
-        return read_serializable(buf, cls)
+        return ObjectSerializer(cls)
+
+    @classmethod
+    def sizeof(cls) -> int | None:
+        return cls.serializer().sizeof()
 
     def write(self, buf: io.Writer):
+        return self.serializer().write(buf, self)
 
-        write_serializable(buf, type(self), self)
+    @classmethod
+    def read(cls, buf: io.Reader) -> t.Self:
+        return cls.serializer().read(buf)
+
+    def to_bytes(self) -> bytes:
+        return self.serializer().to_bytes(self)
 
     @classmethod
     def from_bytes(cls, data: bytes) -> t.Self:
-        buf = io.BytesIO(data)
-        return cls.read(buf)
-
-    def to_bytes(self) -> bytes:
-        buf = io.BytesIO()
-        self.write(buf)
-        buf.seek(0)
-        return buf.read()
+        return cls.serializer().from_bytes(data)

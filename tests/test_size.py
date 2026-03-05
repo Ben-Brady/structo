@@ -1,3 +1,4 @@
+from typing import Annotated
 import structo as st
 import pytest
 from utils import test
@@ -19,49 +20,49 @@ from utils import test
         (st.float64, 8),
     ],
 )
-def _(datatype, length):
-    assert st.sizeof(datatype) == length
+def _(datatype: st.Serializer, length: int):
+    assert datatype.sizeof() == length
 
 
 @test("sizeof(SerializableObject): single parameter")
 def _():
     class Foo(st.SerializableObject):
-        bar: st.uint32_BE
+        bar: Annotated[int, st.uint32_BE]
 
-    assert st.sizeof(Foo) == 4
+    assert Foo.sizeof() == 4
 
 
 @test("sizeof(SerializableObject): two arguemnts")
 def _():
     class Foo(st.SerializableObject):
-        foo: st.uint32_BE
-        bar: st.uint32_BE
+        foo: Annotated[int, st.uint32_BE]
+        bar: Annotated[int, st.uint32_BE]
 
-    assert st.sizeof(Foo) == 8
+    assert Foo.sizeof() == 8
 
 
 @test("sizeof(SerializableObject): mixed arguments")
 def _():
     class Foo(st.SerializableObject):
-        a: st.uint32_BE
-        b: st.uint8
-        c: st.Buffer[100]
+        a: Annotated[int, st.uint32_BE]
+        b: Annotated[int, st.uint8]
+        c: Annotated[bytes, st.Buffer(100)]
 
-    assert st.sizeof(Foo) == 4 + 1 + 100
+    assert Foo.sizeof() == 4 + 1 + 100
 
 
 @test("sizeof(SerializableObject): unknownable")
 def _():
     class Foo(st.SerializableObject):
-        a: st.String[st.uint8]
+        a: Annotated[str, st.String(st.uint8)]
 
-    assert st.sizeof(Foo) is None
+    assert Foo.sizeof() is None
 
 
 @test("sizeof(SerializableObject): unknownable mixed")
 def _():
     class Foo(st.SerializableObject):
-        a: st.uint8
-        b: st.String[st.uint8]
+        a: Annotated[int, st.uint8]
+        b: Annotated[str, st.String(st.uint8)]
 
-    assert st.sizeof(Foo) is None
+    assert Foo.sizeof() is None

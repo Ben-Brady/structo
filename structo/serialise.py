@@ -1,15 +1,12 @@
 import io
 import typing as t
-from .serializer import Format, Serializer
+from .serializer import Serializer
 
 
-def get_serializer(format: Format) -> Serializer:
+def get_serializer(format: type) -> Serializer:
+    from .serializer import Serializer
     from .object import SerializableObject
-
-    # Must be lazyily imported due to circular imports
-
-    if hasattr(format, "__value__"):
-        format = format.__value__
+    from .types.object import ObjectSerializer
 
     if t.get_origin(format) is t.Annotated:
         args = t.get_args(format)
@@ -20,10 +17,8 @@ def get_serializer(format: Format) -> Serializer:
 
         return serializer
 
-    if isinstance(format, type) and issubclass(format, SerializableObject):
-        from .types.object import SerialiableObjectSerializer
-
-        return SerialiableObjectSerializer()
+    if issubclass(format, SerializableObject):
+        return ObjectSerializer(format)
 
     # Nicely formatted errors:
     if format == int:
@@ -44,24 +39,3 @@ def get_serializer(format: Format) -> Serializer:
         )
 
     raise NotImplementedError(f"No serializer found for {format}")
-
-
-def write_serializable(buf: io.Writer, format: Format, value: t.Any):
-    return get_serializer(format).write(buf, format, value)
-
-
-def read_serializable(buf: io.Reader, format: Format) -> t.Any:
-    return get_serializer(format).read(buf, format)
-
-
-def sizeof(format: Format) -> int | None:
-    return get_serializer(format).sizeof(format)
-
-
-def read_uint(buf: io.Reader, format: Format) -> int:
-    value = read_serializable(buf, format)
-
-    assert isinstance(value, int), f"expected uint, got {format}"
-    assert value >= 0, "expected uint, got {format}"
-
-    return value

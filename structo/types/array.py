@@ -1,50 +1,34 @@
-import typing as t
 from ..serializer import Serializer
-from ..serialise import write_serializable, read_serializable, get_serializer
 
 
+class Array[T](Serializer[list[T]]):
+    length: int
+    type: Serializer[T]
 
-class ArraySerializer(Serializer[list]):
-    def write(self, buf, format, value):
-        length, tvalue = t.get_args(format)
+    def __init__(self, length: int, type: Serializer[T]) -> None:
+        assert length > 0, "Array must be longer than 0"
+        self.length = length
+        self.type = type
 
+    def write(self, buf, value):
         assert (
-            len(value) == length
-        ), f"recieved array with {len(value)} length, expected {length}"
+            len(value) == self.length
+        ), f"expected array with {self.length} length, receieved {len(value)}"
+
         for item in value:
-            write_serializable(buf, tvalue, item)
+            self.type.write(buf, item)
 
-    def read(self, buf, format):
-        length, tvalue = t.get_args(format)
-
+    def read(self, buf):
         items = []
-        for _ in range(length):
-            items.append(read_serializable(buf, tvalue))
+        for _ in range(self.length):
+            items.append(self.type.read(buf))
 
         return items
 
-    def sizeof(self, format):
-        length, tvalue = t.get_args(format)
-
-        element_length = get_serializer(tvalue).sizeof(tvalue)
+    def sizeof(self):
+        element_length = self.type.sizeof()
         if element_length is None:
             return None
         else:
-            return element_length * length
+            return element_length * self.length
 
-
-
-type Array[Length, Value] = t.Annotated[list[Value], ArraySerializer()]
-"""
-**array[Length: int, Value: Serializable]**
-
-An fixed length array of values
-
-> Length: The number of elmenets
-
-> Value: The value to store in the array
-
-**Example**: `array[8, uint32]`
-
----
-"""

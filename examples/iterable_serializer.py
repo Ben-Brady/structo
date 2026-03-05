@@ -1,40 +1,42 @@
+import typing as t
+from typing import Annotated
 from structo import (
     SerializableObject,
     Serializer,
-    write_serializable,
-    read_serializable,
     uint32_LE,
     String,
     List,
 )
 import random
-import typing as t
 from pathlib import Path
 
 
 class Post(SerializableObject):
-    id: uint32_LE
-    author: String[uint32_LE]
-    tags: List[uint32_LE, String[uint32_LE]]
+    id: Annotated[int, uint32_LE]
+    author: Annotated[str, String(uint32_LE)]
+    tags: Annotated[list[str], List(String(uint32_LE), uint32_LE)]
+
+CONTINUE_BYTE = bytes([255])
+NULL_TERMINATOR = bytes([0])
 
 
 class PostsSerialiser(Serializer[t.Iterable[Post]]):
-    def write(self, buf, format, value):
+    def write(self, buf, value):
         for item in value:
-            buf.write(bytes([255]))
-            write_serializable(buf, Post, item)
+            buf.write(CONTINUE_BYTE)
+            item.write(buf)
 
-        buf.write(bytes([0]))
+        buf.write(NULL_TERMINATOR)
 
-    def read(self, buf, format):
+    def read(self, buf):
         while True:
-            continue_byte = buf.read(1)[0]
-            if continue_byte == 0:
+            continue_byte = buf.read(1)
+            if continue_byte == NULL_TERMINATOR:
                 break
-            assert continue_byte == 255, "Continue byte was not 255"
+            assert continue_byte == CONTINUE_BYTE, "Continue byte was not 255"
 
             print("Loading...")  # to prove it's interspliced loading and yielding
-            yield read_serializable(buf, Post)
+            yield Post.read(buf)
 
 
 type PostsIterable = t.Annotated[t.Iterable[Post], PostsSerialiser()]
@@ -54,9 +56,9 @@ output = Path("output.raw")
 if not output.exists():
     with open(output, "wb") as f:
         posts = generate_posts()
-        write_serializable(f, PostsIterable, posts)
+        PostsSerialiser().write(f, posts)
 
 with open(output, "rb") as f:
-    iterable_posts = read_serializable(f, PostsIterable)
+    iterable_posts = PostsSerialiser().read(f)
     for post in iterable_posts:
         print(post)
