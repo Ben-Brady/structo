@@ -3,25 +3,6 @@ from ..serializer import Serializer
 from ..serialise import write_serializable, read_serializable, get_serializer
 
 
-class FixedBlobSerializer(Serializer[bytes]):
-    def write(self, buf, format, value):
-        (length,) = t.get_args(format)
-
-        assert (
-            len(value) == length
-        ), f"recieved data with {len(value)} length, expected {length}"
-        buf.write(value)
-
-    def read(self, buf, format):
-        (length,) = t.get_args(format)
-
-        data = buf.read(length)
-        return data
-
-    def sizeof(self, format):
-        (length,) = t.get_args(format)
-        return length
-
 
 class ArraySerializer(Serializer[list]):
     def write(self, buf, format, value):
@@ -51,19 +32,6 @@ class ArraySerializer(Serializer[list]):
         else:
             return element_length * length
 
-
-type Buffer[Length] = t.Annotated[bytes, FixedBlobSerializer()]
-"""
-**buffer[Length: int]**
-
-A fixed length bytes
-
-> Length: The integer type used to store the length
-
-**Example**: `buffer[32]`
-
----
-"""
 
 
 type Array[Length, Value] = t.Annotated[list[Value], ArraySerializer()]

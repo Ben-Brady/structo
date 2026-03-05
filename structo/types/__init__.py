@@ -26,7 +26,10 @@ from .primatives import (
     float32_LE,
     float32,
 )
-from .fixed import Array, Buffer
-from .dynamic import List, String, Blob
+from .buffer import Buffer
+from .array import Array
+from .blob import Blob
+from .list import List
+from .string import String
 from .literal import Literal
 from .union import Union, UnionVariant
