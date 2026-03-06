@@ -70,9 +70,3 @@ class Foo(PackedInts):
     type: Annotated[int, PackedInt(bits=2)]
     bar: Annotated[int, PackedInt(bits=10)]
     offset: Annotated[int, PackedInt(bits=4)]
-
-
-obj = Foo(type=1, bar=2, offset=3)
-
-print(obj)
-print(Foo.from_bytes(obj.to_bytes()))
