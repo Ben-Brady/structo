@@ -19,7 +19,7 @@ class Literal(Serializer[bytes]):
 
     def write(self, buf, value):
         assert value in self.values, f"{value} not in {b", ".join(self.values)}"
-        buf.write(self.values)
+        buf.write(value)
 
     def read(self, buf):
         value = buf.read(self._length)
