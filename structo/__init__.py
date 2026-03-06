@@ -2,9 +2,9 @@
 Structify
 """
 
-__version__ = "0.0.6"
+__version__ = "0.0.7"
 
-from .serializer import Serializer, Serialiable
+from .serializer import Serializer, Serializable
 from .serialise import get_serializer
 from .object import SerializableObject
 from .packed import PackedInts, PackedInt

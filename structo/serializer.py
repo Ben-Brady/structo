@@ -2,7 +2,7 @@ import io
 import typing as t
 
 
-class Serialiable:
+class Serializable:
     @classmethod
     def serializer(cls) -> Serializer[t.Self]: ...
 

@@ -1,6 +1,7 @@
 import typing as t
+from ..serialise import to_serializer
 from ..serializer import Serializer
-from ..object import SerializableObject
+from ..object import Serializable
 
 
 class List[T](Serializer[list[T]]):
@@ -9,22 +10,11 @@ class List[T](Serializer[list[T]]):
     length_type: Serializer[int]
     value_type: Serializer
 
-    @t.overload
     def __init__(
-        self, length_type: Serializer[int], value_type: Serializer[T]
-    ) -> None: ...
-
-    @t.overload
-    def __init__(
-        self, length_type: Serializer[int], value_type: T
-    ) -> None: ...
-
-    def __init__(self, length_type: Serializer[int], value_type: Serializer | SerializableObject) -> None:
+        self, length_type: Serializer[int], value_type: Serializer[T] | type[T]
+    ) -> None:
         self.length_type = length_type
-        if isinstance(value_type, SerializableObject):
-            self.value_type = value_type.serializer()
-        else:
-            self.value_type = value_type
+        self.value_type = to_serializer(value_type)
 
     def write(self, buf, value):
         length = len(value)

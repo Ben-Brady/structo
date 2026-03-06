@@ -1,4 +1,4 @@
-from .serializer import Serialiable, Serializer
+from .serializer import Serializable, Serializer
 import typing as t
 import io
 from typing import Annotated
@@ -38,7 +38,7 @@ class PackedIntsMeta(type):
 
 # This is very messed up since we
 @t.dataclass_transform()
-class PackedInts(Serialiable, metaclass=PackedIntsMeta):
+class PackedInts(Serializable, metaclass=PackedIntsMeta):
     _bits: dict[str, PackedInt]
 
     @classmethod

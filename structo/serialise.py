@@ -1,8 +1,18 @@
 import typing as t
-from .serializer import Serializer, Serialiable
+from .serializer import Serializer, Serializable
 
 
-def get_serializer(format: type) -> Serializer:
+def to_serializer[T](format: type[T] | Serializer[T]) -> Serializer[T]:
+    if isinstance(format, Serializer):
+        return format
+
+    if isinstance(format, type) and issubclass(format, Serializable):
+        return format.serializer()
+
+    raise AssertionError(f"Invalid value_type: {format}")
+
+
+def get_serializer(format: type | Serializer) -> Serializer:
     if t.get_origin(format) is t.Annotated:
         args = t.get_args(format)
         serializers = [arg for arg in args if isinstance(arg, Serializer)]
@@ -12,7 +22,7 @@ def get_serializer(format: type) -> Serializer:
 
         return serializer
 
-    if issubclass(format, Serialiable):
+    if issubclass(format, Serializable):
         return format.serializer()
 
     # Nicely formatted errors:

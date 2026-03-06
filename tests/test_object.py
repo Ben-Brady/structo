@@ -52,3 +52,4 @@ def _():
 
     obj = Bar(foo=Foo(1))
     assert obj == Bar.from_bytes(obj.to_bytes())
+
