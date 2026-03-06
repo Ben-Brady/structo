@@ -22,7 +22,7 @@ def get_serializer(format: type | Serializer) -> Serializer:
 
         return serializer
 
-    if issubclass(format, Serializable):
+    if isinstance(format, type) and issubclass(format, Serializable):
         return format.serializer()
 
     # Nicely formatted errors:

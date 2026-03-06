@@ -2,7 +2,7 @@
 Structify
 """
 
-__version__ = "0.0.8"
+__version__ = "0.0.9"
 
 from .serializer import Serializer, Serializable
 from .serialise import get_serializer
@@ -42,8 +42,4 @@ from .types import (
     Blob,
     Literal,
     ObjectSerializer,
-)
-from .utils import (
-    StructoReader,
-    StructifyWriter,
 )
