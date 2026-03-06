@@ -1,13 +1,8 @@
-import io
 import typing as t
-from .serializer import Serializer
+from .serializer import Serializer, Serialiable
 
 
 def get_serializer(format: type) -> Serializer:
-    from .serializer import Serializer
-    from .object import SerializableObject
-    from .types.object import ObjectSerializer
-
     if t.get_origin(format) is t.Annotated:
         args = t.get_args(format)
         serializers = [arg for arg in args if isinstance(arg, Serializer)]
@@ -17,8 +12,8 @@ def get_serializer(format: type) -> Serializer:
 
         return serializer
 
-    if issubclass(format, SerializableObject):
-        return ObjectSerializer(format)
+    if isinstance(format, Serialiable):
+        return format.serializer()
 
     # Nicely formatted errors:
     if format == int:

@@ -2,9 +2,12 @@
 Structify
 """
 
-__version__ = "0.0.4"
+__version__ = "0.0.5"
 
-from .serializer import Serializer
+from .serializer import Serializer, Serialiable
+from .serialise import get_serializer
+from .object import SerializableObject
+from .packed import PackedInts, PackedInt
 from .types import (
     uint64_BE,
     uint64_LE,
@@ -40,7 +43,6 @@ from .types import (
     Literal,
     ObjectSerializer,
 )
-from .object import SerializableObject
 from .utils import (
     StructoReader,
     StructifyWriter,

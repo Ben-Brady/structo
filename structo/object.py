@@ -3,7 +3,7 @@ import annotationlib
 import typing as t
 from dataclasses import dataclass
 
-from .serializer import Serializer
+from .serializer import Serialiable, Serializer
 from .serialise import get_serializer
 
 
@@ -32,11 +32,10 @@ class SerializableObjectMeta(type):
 
 # This is very messed up since we
 @t.dataclass_transform()
-class SerializableObject(metaclass=SerializableObjectMeta):
+class SerializableObject(Serialiable, metaclass=SerializableObjectMeta):
     @classmethod
     def serializer(cls) -> Serializer[t.Self]:
         from .types import ObjectSerializer
-
         return ObjectSerializer(cls)
 
     @classmethod

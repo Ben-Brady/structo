@@ -33,3 +33,4 @@ from .list import List
 from .string import String
 from .literal import Literal
 from .object import ObjectSerializer
+from .packed import PackedIntSerializer

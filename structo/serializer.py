@@ -1,4 +1,10 @@
 import io
+import typing as t
+
+
+class Serialiable:
+    @classmethod
+    def serializer(cls) -> Serializer[t.Self]: ...
 
 
 class Serializer[T]:
