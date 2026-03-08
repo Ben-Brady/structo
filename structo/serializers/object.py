@@ -1,8 +1,8 @@
 import io
 import annotationlib
 
-from ..serializer import Serializer
-from ..object import SerializableObject
+from ..interfaces import Serializer
+from ..objects import SerializableObject
 from ..serialise import get_serializer
 
 

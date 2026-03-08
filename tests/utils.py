@@ -9,14 +9,5 @@ def test(name: str):
     return wrapper
 
 
-from structo import SerializableObject
-
-
-def assert_serialises_correctly(before: SerializableObject):
-    data = type(before).to_bytes(before)
-    after = deserialize_from_bytes(obj_type, data)
-    assert before == after, f"{before} did not save and load correctly"
-
-
 def assert_equal(actual: bytes, expected: bytes):
     assert actual == expected, f"expected {expected}, recieved {actual}"

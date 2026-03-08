@@ -1,4 +1,4 @@
-from .primatives import (
+from .numbers import (
     uint64_BE,
     uint64_LE,
     uint64,

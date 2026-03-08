@@ -1,7 +1,6 @@
-from .serializer import Serializable, Serializer
+from ..interfaces import Serializable, Serializer
+
 import typing as t
-import io
-from typing import Annotated
 from dataclasses import dataclass
 import annotationlib
 
@@ -43,30 +42,6 @@ class PackedInts(Serializable, metaclass=PackedIntsMeta):
 
     @classmethod
     def serializer(cls) -> Serializer[t.Self]:
-        from .types import PackedIntSerializer
+        from ..serializers import PackedIntSerializer
 
         return PackedIntSerializer(cls)
-
-    @classmethod
-    def sizeof(cls) -> int | None:
-        return cls.serializer().sizeof()
-
-    def write(self, buf: io.Writer):
-        return self.serializer().write(buf, self)
-
-    @classmethod
-    def read(cls, buf: io.Reader) -> t.Self:
-        return cls.serializer().read(buf)
-
-    def to_bytes(self) -> bytes:
-        return self.serializer().to_bytes(self)
-
-    @classmethod
-    def from_bytes(cls, data: bytes) -> t.Self:
-        return cls.serializer().from_bytes(data)
-
-
-class Foo(PackedInts):
-    type: Annotated[int, PackedInt(bits=2)]
-    bar: Annotated[int, PackedInt(bits=10)]
-    offset: Annotated[int, PackedInt(bits=4)]

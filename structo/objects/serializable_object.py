@@ -1,10 +1,9 @@
-import io
 import annotationlib
 import typing as t
 from dataclasses import dataclass
 
-from .serializer import Serializable, Serializer
-from .serialise import get_serializer
+from ..interfaces import Serializable, Serializer
+from ..serialise import get_serializer
 
 
 class SerializableObjectMeta(type):
@@ -35,24 +34,6 @@ class SerializableObjectMeta(type):
 class SerializableObject(Serializable, metaclass=SerializableObjectMeta):
     @classmethod
     def serializer(cls) -> Serializer[t.Self]:
-        from .types import ObjectSerializer
+        from ..serializers import ObjectSerializer
 
         return ObjectSerializer(cls)
-
-    @classmethod
-    def sizeof(cls) -> int | None:
-        return cls.serializer().sizeof()
-
-    def write(self, buf: io.Writer):
-        return self.serializer().write(buf, self)
-
-    @classmethod
-    def read(cls, buf: io.Reader) -> t.Self:
-        return cls.serializer().read(buf)
-
-    def to_bytes(self) -> bytes:
-        return self.serializer().to_bytes(self)
-
-    @classmethod
-    def from_bytes(cls, data: bytes) -> t.Self:
-        return cls.serializer().from_bytes(data)

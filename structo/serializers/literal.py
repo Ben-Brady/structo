@@ -1,8 +1,8 @@
-from ..serializer import Serializer
+from ..interfaces import Serializer
 
 
 class Literal(Serializer[bytes]):
-    values: list[bytes]
+    _values: list[bytes]
     _length: int
 
     def __init__(self, *values: bytes) -> None:
@@ -15,15 +15,15 @@ class Literal(Serializer[bytes]):
             ), f"All values in structo.Literal have to be the same length, expected {value} to be length {length}"
 
         self._length = length
-        self.values = list(values)
+        self._values = list(values)
 
     def write(self, buf, value):
-        assert value in self.values, f"{value} not in {b", ".join(self.values)}"
+        assert value in self._values, f"{value} not in {b", ".join(self._values)}"
         buf.write(value)
 
     def read(self, buf):
         value = buf.read(self._length)
-        assert value in self.values, f"{value} not in {b", ".join(self.values)}"
+        assert value in self._values, f"{value} not in {b", ".join(self._values)}"
         return value
 
     def sizeof(self):

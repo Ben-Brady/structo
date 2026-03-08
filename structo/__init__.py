@@ -4,11 +4,10 @@ Structify
 
 __version__ = "0.0.9"
 
-from .serializer import Serializer, Serializable
+from .interfaces import Serializer, Serializable
 from .serialise import get_serializer
-from .object import SerializableObject
-from .packed import PackedInts, PackedInt
-from .types import (
+from .objects import SerializableObject, PackedInt, PackedInts
+from .serializers import (
     uint64_BE,
     uint64_LE,
     uint64,

@@ -1,7 +1,6 @@
-import typing as t
 import io
 import struct
-from ..serializer import Serializer
+from ..interfaces import Serializer
 
 
 def struct_serializer(sformat: str, bytes: int) -> Serializer:

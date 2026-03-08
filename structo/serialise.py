@@ -1,5 +1,5 @@
 import typing as t
-from .serializer import Serializer, Serializable
+from .interfaces import Serializer, Serializable
 
 
 def to_serializer[T](format: type[T] | Serializer[T]) -> Serializer[T]:

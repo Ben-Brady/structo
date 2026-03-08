@@ -1,4 +1,4 @@
-from structo import Serializer
+from structo import Serializer, Serializable
 from dataclasses import dataclass
 import typing as t
 
@@ -6,10 +6,14 @@ import typing as t
 # We don't inherit from SerialiableObject
 # since we're using a custom serializer
 @dataclass
-class Flags:
+class Flags(Serializable):
     flag_a: bool
     flag_b: bool
     flag_c: bool
+
+    @classmethod
+    def serializer(cls):
+        return FlagsSerialiser()
 
 
 class FlagsSerialiser(Serializer[Flags]):
@@ -37,9 +41,6 @@ class FlagsSerialiser(Serializer[Flags]):
 
     def sizeof(self):
         return 1
-
-
-type FlagsDatatype = t.Annotated[Flags, FlagsSerialiser()]
 
 
 value = Flags(
