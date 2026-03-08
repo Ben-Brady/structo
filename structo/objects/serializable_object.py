@@ -16,7 +16,7 @@ class SerializableObjectMeta(type):
 
         assert annotate, "No annotations method available"
         annotations = annotate(annotationlib.Format.VALUE_WITH_FAKE_GLOBALS)
-        
+
         fields: dict[str, Serializer] = {}
         for key, annotation in annotations.items():
             try:
