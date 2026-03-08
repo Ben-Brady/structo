@@ -40,5 +40,5 @@ from .serializers import (
     String,
     Blob,
     Literal,
-    ObjectSerializer,
+    Optional,
 )
