@@ -1,6 +1,7 @@
 import typing as t
 import structo as st
 from utils import test
+import pytest
 
 
 @test("Array: sizeof")
@@ -8,7 +9,7 @@ def _():
     assert st.Array(st.int8, 4).sizeof() == 4
 
 
-@test("Array: nested bits")
+@test("Array: PackedInts")
 def _():
     class Bits(st.PackedInts):
         a: t.Annotated[int, st.PackedInt(bits=2)]
@@ -18,3 +19,30 @@ def _():
 
     obj = Object(bits=[Bits(1), Bits(2)])
     assert obj == Object.from_bytes(obj.to_bytes())
+
+
+@test("Array: regular example")
+def _():
+    class Foo(st.SerializableObject):
+        a: t.Annotated[list[int], st.Array(st.uint8, 3)]
+
+    obj = Foo(a=[1, 2, 3])
+    assert obj == Foo.from_bytes(obj.to_bytes())
+
+
+@test("Array: too little values")
+def _():
+    class Foo(st.SerializableObject):
+        a: t.Annotated[list[int], st.Array(st.uint8, length=3)]
+
+    with pytest.raises(Exception):
+        Foo(a=[1, 2]).to_bytes()
+
+
+@test("Array: too many values")
+def _():
+    class Foo(st.SerializableObject):
+        a: t.Annotated[list[int], st.Array(st.uint8, length=3)]
+
+    with pytest.raises(Exception):
+        Foo(a=[1, 2, 3, 4]).to_bytes()
