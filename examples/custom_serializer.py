@@ -1,53 +1,37 @@
-from structo import Serializer, Serializable
+from typing import Annotated
+from structo import Serializer, Serializable, SerializableObject, String
 from dataclasses import dataclass
-import typing as t
 
 
-# We don't inherit from SerialiableObject
-# since we're using a custom serializer
 @dataclass
-class Flags(Serializable):
-    flag_a: bool
-    flag_b: bool
-    flag_c: bool
+class UserFlags(Serializable):
+    is_alive: bool
+    is_banned: bool
+    is_admin: bool
 
     @classmethod
     def serializer(cls):
-        return FlagsSerialiser()
+        return UserFlagsSerializer()
 
 
-class FlagsSerialiser(Serializer[Flags]):
-    def write(self, buf, value):
-        byte = 0
-        if value.flag_a:
-            byte += 1 << 0
-        if value.flag_b:
-            byte += 1 << 1
-        if value.flag_c:
-            byte += 1 << 2
+class UserFlagsSerializer(Serializer[UserFlags]):
+    def write(self, f, value):
+        byte = (
+            int(value.is_alive)  << 0 |
+            int(value.is_admin)  << 1 |
+            int(value.is_banned) << 2
+        )
+        f.write(bytes([byte]))
 
-        byte = buf.write(bytes([byte]))
-
-    def read(self, buf):
-        byte = buf.read(1)[0]
-        flag_a = ((byte >> 0) & 1) != 0
-        flag_b = ((byte >> 1) & 1) != 0
-        flag_c = ((byte >> 2) & 1) != 0
-        return Flags(
-            flag_a=flag_a,
-            flag_b=flag_b,
-            flag_c=flag_c,
+    def read(self, f):
+        byte = f.read(1)[0]
+        return UserFlags(
+            is_alive  = ((byte >> 0) & 1) == 1,
+            is_admin  = ((byte >> 1) & 1) == 1,
+            is_banned = ((byte >> 2) & 1) == 1
         )
 
-    def sizeof(self):
-        return 1
 
-
-value = Flags(
-    flag_a=False,
-    flag_b=True,
-    flag_c=False,
-)
-output = FlagsSerialiser().to_bytes(value)
-print(output)
-print(FlagsSerialiser().from_bytes(output))
+class User(SerializableObject):
+    name: Annotated[str, String()]
+    flags: UserFlags

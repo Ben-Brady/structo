@@ -21,22 +21,23 @@ NULL_TERMINATOR = bytes([0])
 
 
 class PostsSerialiser(Serializer[t.Iterable[Post]]):
-    def write(self, buf, value):
+    def write(self, f, value):
         for item in value:
-            buf.write(CONTINUE_BYTE)
-            item.write(buf)
+            f.write(CONTINUE_BYTE)
+            item.write(f)
 
-        buf.write(NULL_TERMINATOR)
+        f.write(NULL_TERMINATOR)
 
-    def read(self, buf):
+    def read(self, f):
         while True:
-            continue_byte = buf.read(1)
+            continue_byte = f.read(1)
             if continue_byte == NULL_TERMINATOR:
                 break
+
             assert continue_byte == CONTINUE_BYTE, "Continue byte was not 255"
 
             print("Loading...")  # to prove it's interspliced loading and yielding
-            yield Post.read(buf)
+            yield Post.read(f)
 
 
 type PostsIterable = t.Annotated[t.Iterable[Post], PostsSerialiser()]
