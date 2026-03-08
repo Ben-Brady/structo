@@ -13,18 +13,16 @@ class SerializableObjectMeta(type):
             return new_class
 
         annotate = annotationlib.get_annotate_from_class_namespace(dct)
-        _annotations: dict[str, Serializer] = {}
 
-        if annotate:
-            attrs = annotate(annotationlib.Format.VALUE_WITH_FAKE_GLOBALS)
-            for key, value in attrs.items():
-                try:
-                    serializer = get_serializer(value)
-                    _annotations[key] = serializer
-                except Exception as e:
-                    raise ValueError(
-                        f"Invalid attribute defintion for {name}.{key}"
-                    ) from e
+        assert annotate, "No annotations method available"
+        annotations = annotate(annotationlib.Format.VALUE_WITH_FAKE_GLOBALS)
+        
+        fields: dict[str, Serializer] = {}
+        for key, annotation in annotations.items():
+            try:
+                fields[key] = get_serializer(annotation)
+            except Exception as e:
+                raise ValueError(f"Invalid attribute defintion for {name}.{key}") from e
 
         return t.cast(SerializableObject, dataclass(new_class))
 
