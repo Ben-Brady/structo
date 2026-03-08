@@ -10,7 +10,7 @@ def _():
         a: t.Annotated[int, st.PackedInt(bits=2)]
 
     class Object(st.SerializableObject):
-        foo: t.Annotated[list[Bits], st.List(st.uint8, Bits)]
+        foo: t.Annotated[list[Bits], st.List(Bits)]
 
     obj = Object(foo=[Bits(a=1)])
     assert obj == Object.from_bytes(obj.to_bytes())
