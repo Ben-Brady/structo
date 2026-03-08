@@ -13,17 +13,17 @@ class List[T](Serializer[list[T]]):
         self._length_type = length or uint32_LE
         self._value_type = to_serializer(value)
 
-    def write(self, buf, value):
+    def write(self, f, value):
         length = len(value)
-        self._length_type.write(buf, length)
+        self._length_type.write(f, length)
         for item in value:
-            self._value_type.write(buf, item)
+            self._value_type.write(f, item)
 
-    def read(self, buf):
-        length = self._length_type.read(buf)
+    def read(self, f):
+        length = self._length_type.read(f)
         values = []
         for _ in range(length):
-            value = self._value_type.read(buf)
+            value = self._value_type.read(f)
             values.append(value)
 
         return values

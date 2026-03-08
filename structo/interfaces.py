@@ -10,29 +10,29 @@ class Serializable:
     def sizeof(cls) -> int | None:
         return cls.serializer().sizeof()
 
+    def write(self, f: t.IO[bytes]):
+        return self.serializer().write(f, self)
+
     @classmethod
-    def read(cls, f: io.Reader) -> t.Self:
+    def read(cls, f: t.IO[bytes]) -> t.Self:
         return cls.serializer().read(f)
+
+    def to_bytes(self) -> bytes:
+        return self.serializer().to_bytes(self)
 
     @classmethod
     def from_bytes(cls, data: bytes) -> t.Self:
         return cls.serializer().from_bytes(data)
-
-    def write(self, f: io.Writer):
-        return self.serializer().write(f, self)
-
-    def to_bytes(self) -> bytes:
-        return self.serializer().to_bytes(self)
 
 
 class Serializer[T]:
     def sizeof(self) -> int | None:
         return None
 
-    def write(self, buf: io.Writer, value: T):
+    def write(self, f: t.IO[bytes], value: T):
         raise NotImplementedError(f"{type(self).__name__} can't be serialized")
 
-    def read(self, buf: io.Reader) -> T:
+    def read(self, f: t.IO[bytes]) -> T:
         raise NotImplementedError(f"{type(self).__name__} can't be deserialized")
 
     def to_bytes(self, value: T) -> bytes:

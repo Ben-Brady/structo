@@ -7,14 +7,14 @@ class Buffer(Serializer[bytes]):
     def __init__(self, length: int) -> None:
         self._length = length
 
-    def write(self, buf, value):
+    def write(self, f, value):
         assert (
             len(value) == self._length
         ), f"expected data with length {self._length}, received {len(value)}"
-        buf.write(value)
+        f.write(value)
 
-    def read(self, buf):
-        data = buf.read(self._length)
+    def read(self, f):
+        data = f.read(self._length)
         return data
 
     def sizeof(self):

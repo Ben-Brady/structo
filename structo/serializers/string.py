@@ -16,12 +16,12 @@ class String(Serializer[str]):
         """
         self._length_type = length_type or uint32_LE
 
-    def write(self, buf, value):
+    def write(self, f, value):
         data = value.encode("utf-8")
-        self._length_type.write(buf, len(data))
-        buf.write(data)
+        self._length_type.write(f, len(data))
+        f.write(data)
 
-    def read(self, buf):
-        length = self._length_type.read(buf)
-        data = buf.read(length)
+    def read(self, f):
+        length = self._length_type.read(f)
+        data = f.read(length)
         return data.decode("utf-8")

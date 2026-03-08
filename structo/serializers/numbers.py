@@ -8,12 +8,12 @@ def struct_serializer(sformat: str, bytes: int) -> Serializer:
         def sizeof(self):
             return bytes
 
-        def write(self, buf: io.Writer, value: int):
+        def write(self, f, value):
             data = struct.pack(sformat, value)
-            return buf.write(data)
+            return f.write(data)
 
-        def read(self, buf: io.Reader):
-            data = buf.read(bytes)
+        def read(self, f):
+            data = f.read(bytes)
             return struct.unpack(sformat, data)[0]
 
     return StructSerializer()

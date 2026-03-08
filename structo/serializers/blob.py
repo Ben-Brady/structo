@@ -1,3 +1,4 @@
+from .numbers import uint32_LE
 from ..interfaces import Serializer
 
 
@@ -6,14 +7,14 @@ class Blob(Serializer[bytes]):
 
     _length_type: Serializer[int]
 
-    def __init__(self, length_type: Serializer[int]) -> None:
-        self._length_type = length_type
+    def __init__(self, length_type: Serializer[int] | None = None) -> None:
+        self._length_type = length_type or uint32_LE
 
-    def write(self, buf, value):
-        self._length_type.write(buf, len(value))
-        buf.write(value)
+    def write(self, f, value):
+        self._length_type.write(f, len(value))
+        f.write(value)
 
-    def read(self, buf):
-        length = self._length_type.read(buf)
-        data = buf.read(length)
+    def read(self, f):
+        length = self._length_type.read(f)
+        data = f.read(length)
         return data

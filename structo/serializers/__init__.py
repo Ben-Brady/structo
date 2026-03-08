@@ -32,5 +32,6 @@ from .blob import Blob
 from .list import List
 from .string import String
 from .literal import Literal
+from .optional import Optional
 from .object import ObjectSerializer
 from .packed import PackedIntSerializer

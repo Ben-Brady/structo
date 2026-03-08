@@ -1,3 +1,4 @@
+import typing as t
 import io
 import annotationlib
 
@@ -36,16 +37,16 @@ class ObjectSerializer[T: SerializableObject](Serializer[T]):
 
         return total_size
 
-    def write(self, buf: io.Writer, value: T):
+    def write(self, f, value):
         for field_key, field_format in self._annotations.items():
             field_value = getattr(value, field_key)
-            field_format.write(buf, field_value)
+            field_format.write(f, field_value)
 
-    def read(self, buf: io.Reader) -> T:
+    def read(self, f):
         attrs = {}
 
         for field_key, field_format in self._annotations.items():
-            field_value = field_format.read(buf)
+            field_value = field_format.read(f)
             attrs[field_key] = field_value
 
         return self._type(**attrs)

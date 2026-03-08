@@ -6,23 +6,23 @@ class Array[T](Serializer[list[T]]):
     _length: int
     _value_type: Serializer[T]
 
-    def __init__(self, length: int, value_type: Serializer[T] | type[T]) -> None:
+    def __init__(self, value: Serializer[T] | type[T], length: int) -> None:
         assert length > 0, "Array must be longer than 0"
         self._length = length
-        self._value_type = to_serializer(value_type)
+        self._value_type = to_serializer(value)
 
-    def write(self, buf, value):
+    def write(self, f, value):
         assert (
             len(value) == self._length
         ), f"expected array with {self._length} length, receieved {len(value)}"
 
         for item in value:
-            self._value_type.write(buf, item)
+            self._value_type.write(f, item)
 
-    def read(self, buf):
+    def read(self, f):
         items = []
         for _ in range(self._length):
-            items.append(self._value_type.read(buf))
+            items.append(self._value_type.read(f))
 
         return items
 
