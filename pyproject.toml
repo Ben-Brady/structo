@@ -4,16 +4,15 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "structo"
-authors = [{name = "Ben Brady", email = "benbradybusiness@gmail.com"}]
+authors = [{ name = "Ben Brady", email = "benbradybusiness@gmail.com" }]
 license = "MIT"
 license-files = ["LICENSE"]
 dynamic = ["version", "description"]
+requires-python = ">=3.14"
 
 [project.urls]
 Home = "https://nnilky.site"
 
-[dependency-groups]
-dev = [
-    "black>=26.1.0",
-    "pytest>=9.0.2",
-]
+[project.optional-dependencies]
+dev = ["black>=26.1.0", "pytest>=9.0.2"]
+docs = ["black", "mkdocs", "mkdocs-material", "mkdocstrings[crystal,python]"]

@@ -1,0 +1,88 @@
+site_url: https://ben-brady.github.io/structo/
+docs_dir: docs
+
+site_name: Structo
+site_description: Simplified byte serialisation and deseralisation
+site_author: Ben Brady
+repo_name: Structo
+repo_url: https://github.com/Ben-Brady/structo
+
+nav:
+- Introduction:
+  - Home: index.md
+  - Quickstart: introduction/quickstart.md
+- Data Types:
+  - Numbers: types/numbers.md
+  - Buffer: types/buffer.md
+  - Blob: types/blob.md
+  - String: types/string.md
+  - Byte Literals: types/literal.md
+- Container Types:
+  - Serializable Object: types/serializable-object.md
+  - Array: types/array.md
+  - List: types/list.md
+  - Packed Ints: types/packed-ints.md
+- Security: security.md
+
+theme:
+  name: material
+  # favicon: assets/logo-monochrome.svg
+  # logo: assets/logo.svg
+  features:
+    - content.code.copy # Add the copy to clipboard button to code blocks
+    - search # Add the search bar
+    - search.suggest # Add suggestions to search
+    - navigation.top
+    - navigation.tabs # Page tabs at the top
+    - navigation.instant # Preload pages
+    - navigation.tracking # Add anchor tag to url
+  extra:
+    social:
+      - icon: fontawesome/brands/github
+        link: https://github.com/Ben-Brady/structo
+  palette:
+  - media: '(prefers-color-scheme: light)'
+    scheme: default
+    primary: green
+    accent: amber
+    toggle:
+      icon: material/lightbulb
+      name: Switch to dark mode
+  - media: '(prefers-color-scheme: dark)'
+    scheme: slate
+    primary: green
+    accent: amber
+    toggle:
+      icon: material/lightbulb-outline
+      name: Switch to light mode
+
+
+plugins:
+  search: # Add the search bar
+  offline:
+  mkdocstrings:
+    handlers:
+      python:
+        options:
+          show_root_heading: true
+          show_if_no_docstring: true
+          inherited_members: true
+          members_order: source
+          separate_signature: true
+          unwrap_annotated: true
+          filters:
+            - '!^_'
+          merge_init_into_class: true
+          docstring_section_style: spacy
+          signature_crossrefs: true
+          show_symbol_type_heading: true
+          show_symbol_type_toc: true
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
