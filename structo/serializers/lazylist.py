@@ -1,7 +1,7 @@
 import typing as t
-import os
-from .numbers import uint32_LE, uint64_LE
+from .numbers import uint64_LE
 from ..interfaces import Serializer
+from ..serialise import to_serializer
 
 
 class LazyList[T](Serializer[t.Iterable[T]]):
@@ -11,8 +11,8 @@ class LazyList[T](Serializer[t.Iterable[T]]):
     _LENGTH_TYPE = uint64_LE
     _SIZE_TYPE = uint64_LE
 
-    def __init__(self, value: Serializer[T]) -> None:
-        self._value = value
+    def __init__(self, value: Serializer[T] | type[T]) -> None:
+        self._value = to_serializer(value)
 
     def write(self, f, value):
         start = f.tell()

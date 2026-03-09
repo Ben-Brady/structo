@@ -2,7 +2,7 @@
 Structify
 """
 
-__version__ = "0.0.11"
+__version__ = "0.0.12"
 
 from .interfaces import Serializer, Serializable
 from .serialise import get_serializer
