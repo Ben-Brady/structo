@@ -89,8 +89,14 @@ for testset in binary_testsets:
 
 @test("Encode Decode Test")
 @pytest.mark.parametrize("datatype,value,expected", testdata)
-def test_encode_primitives(datatype: st.Serializer, value, expected):
+def _(datatype: st.Serializer, value, expected):
     actual = datatype.to_bytes(value)
     assert (
         actual == expected
     ), f"{datatype} {value=} | expected {expected}, recieved {actual}"
+
+
+@test("uint: negative value raises error")
+def _():
+    with pytest.raises(Exception):
+        st.uint8.to_bytes(-1)

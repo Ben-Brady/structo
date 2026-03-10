@@ -23,6 +23,8 @@ class PackedIntSerializer[T: PackedInts](Serializer[T]):
             field_value = getattr(value, field_key)
 
             max_value = (2**bits) - 1
+
+            assert field_value >= 0, "Cannot serialize negative values"
             assert (
                 field_value <= max_value
             ), f"{self._cls.__name__}{field_key} exceed max value, {field_value} > {max_value}"

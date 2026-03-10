@@ -25,13 +25,14 @@ def _():
     obj = Foo(a=0, b=63, c=0)
     assert obj == Foo.from_bytes(obj.to_bytes())
 
+
 @test("PackedInts: multibyte integer")
 def _():
     class Foo(st.PackedInts):
         a: t.Annotated[int, st.PackedInt(bits=11)]
         b: t.Annotated[int, st.PackedInt(bits=5)]
 
-    obj = Foo(a=(2 ** 11) - 1, b=0)
+    obj = Foo(a=(2**11) - 1, b=0)
     assert obj == Foo.from_bytes(obj.to_bytes())
 
 
@@ -93,3 +94,12 @@ def _():
         c: t.Annotated[int, st.PackedInt(bits=5)]
 
     assert ThreeBytes_A.sizeof() == 3
+
+
+@test("PackedInts: negative value raises error")
+def _():
+    class Foo(st.PackedInts):
+        a: t.Annotated[int, st.PackedInt(bits=8)]
+
+    with pytest.raises(Exception):
+        Foo(-100).to_bytes()
