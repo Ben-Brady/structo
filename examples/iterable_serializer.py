@@ -1,7 +1,7 @@
 import typing as t
 from typing import Annotated
 from structo import (
-    SerializableObject,
+    Struct,
     Serializer,
     uint32_LE,
     String,
@@ -11,10 +11,11 @@ import random
 from pathlib import Path
 
 
-class Post(SerializableObject):
+class Post(Struct):
     id: Annotated[int, uint32_LE]
     author: Annotated[str, String(uint32_LE)]
     tags: Annotated[list[str], List(String(uint32_LE), uint32_LE)]
+
 
 CONTINUE_BYTE = bytes([255])
 NULL_TERMINATOR = bytes([0])
@@ -36,7 +37,8 @@ class PostsSerialiser(Serializer[t.Iterable[Post]]):
 
             assert continue_byte == CONTINUE_BYTE, "Continue byte was not 255"
 
-            print("Loading...")  # to prove it's interspliced loading and yielding
+            # to prove it's interspliced loading and yielding
+            print("Loading...")
             yield Post.read(f)
 
 
@@ -49,7 +51,8 @@ def generate_posts():
         yield Post(
             id=random.randint(0, 1_000_000),
             author="Me",
-            tags=[str(random.randint(0, 100)) for _ in range(random.randint(0, 10))],
+            tags=[str(random.randint(0, 100))
+                  for _ in range(random.randint(0, 10))],
         )
 
 

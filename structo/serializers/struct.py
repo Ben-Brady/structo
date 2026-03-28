@@ -3,11 +3,11 @@ import io
 import annotationlib
 
 from ..interfaces import Serializer
-from ..objects import SerializableObject
+from ..objects import Struct
 from ..serialise import get_serializer
 
 
-class ObjectSerializer[T: SerializableObject](Serializer[T]):
+class StructSerializer[T: Struct](Serializer[T]):
     _annotations: dict[str, Serializer] = {}
     _type: type
 

@@ -6,7 +6,7 @@ import structo as st
 
 @test("LazyList: basic")
 def _():
-    class Foo(st.SerializableObject):
+    class Foo(st.Struct):
         values: t.Annotated[t.Iterable[int], st.LazyList(st.uint8)]
 
     obj = Foo(values=[1, 2, 3])
@@ -16,7 +16,7 @@ def _():
 
 @test("LazyList: with adjecet properties")
 def _():
-    class Foo(st.SerializableObject):
+    class Foo(st.Struct):
         a: t.Annotated[int, st.uint8]
         values: t.Annotated[t.Iterable[int], st.LazyList(st.uint8)]
         c: t.Annotated[int, st.uint8]
@@ -30,7 +30,7 @@ def _():
 
 @test("LazyList: accessing multiple iterators at once")
 def _():
-    class Foo(st.SerializableObject):
+    class Foo(st.Struct):
         a: t.Annotated[t.Iterable[int], st.LazyList(st.uint8)]
         b: t.Annotated[t.Iterable[int], st.LazyList(st.uint8)]
 

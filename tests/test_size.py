@@ -26,7 +26,7 @@ def _(datatype: st.Serializer, length: int):
 
 @test("sizeof(SerializableObject): single parameter")
 def _():
-    class Foo(st.SerializableObject):
+    class Foo(st.Struct):
         bar: Annotated[int, st.uint32_BE]
 
     assert Foo.sizeof() == 4
@@ -34,7 +34,7 @@ def _():
 
 @test("sizeof(SerializableObject): two arguemnts")
 def _():
-    class Foo(st.SerializableObject):
+    class Foo(st.Struct):
         foo: Annotated[int, st.uint32_BE]
         bar: Annotated[int, st.uint32_BE]
 
@@ -43,7 +43,7 @@ def _():
 
 @test("sizeof(SerializableObject): mixed arguments")
 def _():
-    class Foo(st.SerializableObject):
+    class Foo(st.Struct):
         a: Annotated[int, st.uint32_BE]
         b: Annotated[int, st.uint8]
         c: Annotated[bytes, st.Buffer(100)]
@@ -53,7 +53,7 @@ def _():
 
 @test("sizeof(SerializableObject): unknownable")
 def _():
-    class Foo(st.SerializableObject):
+    class Foo(st.Struct):
         a: Annotated[str, st.String(st.uint8)]
 
     assert Foo.sizeof() is None
@@ -61,7 +61,7 @@ def _():
 
 @test("sizeof(SerializableObject): unknownable mixed")
 def _():
-    class Foo(st.SerializableObject):
+    class Foo(st.Struct):
         a: Annotated[int, st.uint8]
         b: Annotated[str, st.String(st.uint8)]
 

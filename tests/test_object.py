@@ -6,7 +6,7 @@ import structo as st
 
 @test("SerialiableObject: object")
 def _():
-    class Foo(st.SerializableObject):
+    class Foo(st.Struct):
         a: t.Annotated[int, st.uint8]
 
     obj = Foo(a=1)
@@ -15,7 +15,7 @@ def _():
 
 @test("SerialiableObject: multiple attributes")
 def _():
-    class Foo(st.SerializableObject):
+    class Foo(st.Struct):
         a: t.Annotated[int, st.uint8]
         b: t.Annotated[int, st.uint16_BE]
 
@@ -26,7 +26,7 @@ def _():
 @test("SerialiableObject: sizeof")
 def _():
 
-    class Foo(st.SerializableObject):
+    class Foo(st.Struct):
         a: t.Annotated[int, st.uint8]
         b: t.Annotated[str, st.uint8]
 
@@ -35,7 +35,7 @@ def _():
 
 @test("SerialiableObject: sizeof unknowable")
 def _():
-    class Foo(st.SerializableObject):
+    class Foo(st.Struct):
         a: t.Annotated[int, st.uint8]
         b: t.Annotated[str, st.String(st.uint8)]
 
@@ -44,12 +44,11 @@ def _():
 
 @test("SerialiableObject: nested object")
 def _():
-    class Foo(st.SerializableObject):
+    class Foo(st.Struct):
         a: t.Annotated[int, st.uint8]
 
-    class Bar(st.SerializableObject):
+    class Bar(st.Struct):
         foo: Foo
 
     obj = Bar(foo=Foo(1))
     assert obj == Bar.from_bytes(obj.to_bytes())
-

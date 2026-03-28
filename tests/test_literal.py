@@ -7,7 +7,7 @@ import structo as st
 
 @test("Literal: reading basic")
 def _():
-    class Foo(st.SerializableObject):
+    class Foo(st.Struct):
         a: t.Annotated[bytes, st.Literal(b"a", b"b")]
 
     obj = Foo(a=b"a")
@@ -16,7 +16,7 @@ def _():
 
 @test("Literal: invalid literal fails")
 def _():
-    class Foo(st.SerializableObject):
+    class Foo(st.Struct):
         a: t.Annotated[bytes, st.Literal(b"a", b"b")]
 
     with pytest.raises(Exception):

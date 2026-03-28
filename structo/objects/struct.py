@@ -6,7 +6,7 @@ from ..interfaces import Serializable, Serializer
 from ..serialise import get_serializer
 
 
-class SerializableObjectMeta(type):
+class StructMeta(type):
     def __new__(cls, name, bases, dct):
         new_class = t.cast(type, super().__new__(cls, name, bases, dct))
         if name == "SerializableObject":
@@ -22,16 +22,17 @@ class SerializableObjectMeta(type):
             try:
                 fields[key] = get_serializer(annotation)
             except Exception as e:
-                raise ValueError(f"Invalid attribute defintion for {name}.{key}") from e
+                raise ValueError(
+                    f"Invalid attribute defintion for {name}.{key}") from e
 
-        return t.cast(SerializableObject, dataclass(new_class))
+        return t.cast(Struct, dataclass(new_class))
 
 
 # This is very messed up since we
 @t.dataclass_transform()
-class SerializableObject(Serializable, metaclass=SerializableObjectMeta):
+class Struct(Serializable, metaclass=StructMeta):
     @classmethod
     def serializer(cls) -> Serializer[t.Self]:
-        from ..serializers import ObjectSerializer
+        from ..serializers import StructSerializer
 
-        return ObjectSerializer(cls)
+        return StructSerializer(cls)

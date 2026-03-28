@@ -1,37 +1,33 @@
-import io
 import typing as t
-from typing import Annotated
-from structo import uint16_LE, uint32_LE, SerializableObject, Literal
+from structo import uint16_LE, uint32_LE, Struct, Literal, Buffer
 
 
-class WavHeader(SerializableObject):
-    chunk_id: Annotated[t.Literal[b"RIFF"], Literal(b"RIFF")]
-    file_size: Annotated[int, uint32_LE]
-    format: Annotated[t.Literal[b"WAVE"], Literal(b"WAVE")]
+class WavHeader(Struct):
+    chunk_id: t.Annotated[str, Literal(b"RIFF")]
+    file_size: t.Annotated[int, uint32_LE]
+    format: t.Annotated[str, Literal(b"WAVE")]
 
 
-class ChunkHeader(SerializableObject):
-    id: Annotated[t.Literal[b"fmt ", b"data"], Literal(b"fmt ", b"data")]
-    size: Annotated[int, uint32_LE]
+class ChunkHeader(Struct):
+    id: t.Annotated[str, Buffer(4)]
+    size: t.Annotated[int, uint32_LE]
 
 
-class WavFormat(SerializableObject):
-    audio_format: Annotated[int, uint16_LE]
-    num_channels: Annotated[int, uint16_LE]
-    sample_rate: Annotated[int, uint32_LE]
-    byte_range: Annotated[int, uint32_LE]
-    block_align: Annotated[int, uint16_LE]
-    bits_per_sample: Annotated[int, uint16_LE]
+class WavInfoChunk(Struct):
+    audio_format: t.Annotated[int, uint16_LE]
+    num_channels: t.Annotated[int, uint16_LE]
+    sample_rate: t.Annotated[int, uint32_LE]
+    byte_range: t.Annotated[int, uint32_LE]
+    block_align: t.Annotated[int, uint16_LE]
+    bits_per_sample: t.Annotated[int, uint16_LE]
 
 
-def read_wav_file(f: io.Reader) -> tuple[WavFormat, bytes]:
-    print(WavHeader.read(f))
-
+def read_wav_file(f: t.IO) -> tuple[WavInfoChunk, bytes]:
     format_header = ChunkHeader.read(f)
     assert format_header.id == b"fmt "
 
     format_data = f.read(format_header.size)
-    format = WavFormat.from_bytes(format_data)
+    format = WavInfoChunk.from_bytes(format_data)
 
     data_header = ChunkHeader.read(f)
     assert data_header.id == b"data"

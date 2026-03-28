@@ -7,7 +7,7 @@ import structo as st
 
 @test("List: regular example")
 def _():
-    class Foo(st.SerializableObject):
+    class Foo(st.Struct):
         a: t.Annotated[list[int], st.List(st.uint8)]
 
     obj = Foo(a=[1, 2, 3])
@@ -16,7 +16,7 @@ def _():
 
 @test("List: over max size")
 def _():
-    class Foo(st.SerializableObject):
+    class Foo(st.Struct):
         a: t.Annotated[list[int], st.List(st.uint8, length=st.uint8)]
     with pytest.raises(Exception):
         Foo(a=[1] * 300).to_bytes()
@@ -27,7 +27,7 @@ def _():
     class Bits(st.PackedInts):
         a: t.Annotated[int, st.PackedInt(bits=2)]
 
-    class Object(st.SerializableObject):
+    class Object(st.Struct):
         foo: t.Annotated[list[Bits], st.List(Bits)]
 
     obj = Object(foo=[Bits(a=1)])

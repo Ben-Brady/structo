@@ -6,7 +6,7 @@ import structo as st
 
 @test("Optional: float vlaue")
 def _():
-    class Foo(st.SerializableObject):
+    class Foo(st.Struct):
         a: t.Annotated[float | None, st.Optional(st.float64)]
 
     obj = Foo(a=1.0)
@@ -15,11 +15,11 @@ def _():
 
 @test("Optional: object")
 def _():
-    class Bar(st.SerializableObject):
+    class Bar(st.Struct):
         a: t.Annotated[int, st.uint16_LE]
         b: t.Annotated[int, st.uint16_LE]
 
-    class Foo(st.SerializableObject):
+    class Foo(st.Struct):
         a: t.Annotated[float | None, st.Optional(st.float64)]
         b: t.Annotated[Bar | None, st.Optional(Bar)]
 
@@ -29,7 +29,7 @@ def _():
 
 @test("Optional: empty")
 def _():
-    class Foo(st.SerializableObject):
+    class Foo(st.Struct):
         a: t.Annotated[float | None, st.Optional(st.float64)]
 
     obj = Foo(a=None)

@@ -6,7 +6,7 @@ __version__ = "0.0.13"
 
 from .interfaces import Serializer, Serializable
 from .serialise import get_serializer
-from .objects import SerializableObject, PackedInt, PackedInts
+from .objects import Struct, PackedInt, PackedInts
 from .serializers import (
     uint64_BE,
     uint64_LE,
