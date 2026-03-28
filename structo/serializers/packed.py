@@ -1,12 +1,12 @@
 from math import ceil
 
-from ..objects import PackedInts
+from ..objects import PackedBits
 from ..interfaces import Serializer
 
 import typing as t
 
 
-class PackedIntSerializer[T: PackedInts](Serializer[T]):
+class PackedBitsSerializer[T: PackedBits](Serializer[T]):
     _size: int
     _bits: dict[str, int]
     _cls: type[type[T]]

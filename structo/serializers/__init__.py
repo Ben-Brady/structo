@@ -34,5 +34,5 @@ from .string import String
 from .literal import Literal
 from .optional import Optional
 from .struct import StructSerializer
-from .packed import PackedIntSerializer
+from .packed import PackedBitsSerializer
 from .lazylist import LazyList

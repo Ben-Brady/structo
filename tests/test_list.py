@@ -24,8 +24,8 @@ def _():
 
 @test("List: nested bits")
 def _():
-    class Bits(st.PackedInts):
-        a: t.Annotated[int, st.PackedInt(bits=2)]
+    class Bits(st.PackedBits):
+        a: t.Annotated[int, st.Bits(bits=2)]
 
     class Object(st.Struct):
         foo: t.Annotated[list[Bits], st.List(Bits)]

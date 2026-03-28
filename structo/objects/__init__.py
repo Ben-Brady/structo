@@ -1,2 +1,2 @@
-from .packed import PackedInt, PackedInts
+from .packed import Bits, PackedBits
 from .struct import Struct
