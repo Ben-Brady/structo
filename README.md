@@ -1,4 +1,4 @@
-# Structo
+# Structo (BETA)
 
 Structo is a library for serializing/deserialising binary file formats.
 

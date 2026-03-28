@@ -43,4 +43,6 @@ class Serializer[T]:
 
     def from_bytes(self, data: bytes) -> T:
         buf = io.BytesIO(data)
-        return self.read(buf)
+        value = self.read(buf)
+        assert buf.tell() == len(data), f"expected {buf.tell()} bytes, received {len(data)} bytes"
+        return value
