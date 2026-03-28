@@ -9,12 +9,12 @@ from ..serialise import get_serializer
 class StructMeta(type):
     def __new__(cls, name, bases, dct):
         new_class = t.cast(type, super().__new__(cls, name, bases, dct))
-        if name == "SerializableObject":
+        if name == "Struct":
             return new_class
 
         annotate = annotationlib.get_annotate_from_class_namespace(dct)
 
-        assert annotate, "No annotations method available"
+        assert annotate, f"No annotation method available for {name}"
         annotations = annotate(annotationlib.Format.VALUE_WITH_FAKE_GLOBALS)
 
         fields: dict[str, Serializer] = {}
