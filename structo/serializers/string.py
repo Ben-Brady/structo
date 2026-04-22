@@ -1,5 +1,5 @@
 import typing as t
-from .numbers import uint32_LE
+from .ints import uint32_LE
 from ..interfaces import Serializer
 
 

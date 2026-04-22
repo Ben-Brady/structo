@@ -2,11 +2,10 @@
 Structify handles serialising and deserialising binary files
 """
 
-__version__ = "0.0.14"
+__version__ = "0.0.15"
 
 from .interfaces import Serializer, Serializable
 from .serialise import get_serializer
-from .objects import Struct, Bits, PackedBits
 from .serializers import (
     uint64_BE,
     uint64_LE,
@@ -34,6 +33,8 @@ from .serializers import (
     float32_BE,
     float32_LE,
     float32,
+
+    Int,
     Array,
     Buffer,
     List,
@@ -42,4 +43,7 @@ from .serializers import (
     Literal,
     Optional,
     LazyList,
+    Struct,
+    Bits,
+    PackedBits
 )

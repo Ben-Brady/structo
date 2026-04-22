@@ -32,9 +32,3 @@ class Optional[T](Serializer[T | None]):
         else:
             return self._value_type.read(f)
 
-    def sizeof(self):
-        value_length = self._value_type.sizeof()
-        if value_length is None:
-            return None
-        else:
-            return value_length + 1

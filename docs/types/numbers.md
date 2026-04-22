@@ -55,4 +55,3 @@ Signed integers allow negative values and are stored as
 | `structo.float64`     | 8     | little     |
 | `structo.float64_LE`  | 8     | little     |
 | `structo.float64_BE`  | 8     | big        |
-

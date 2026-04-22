@@ -7,9 +7,9 @@ class Array[T](Serializer[list[T]]):
     _value_type: Serializer[T]
 
     def __init__(self, value: Serializer[T] | type[T], length: int) -> None:
-        assert length > 0, "Array must be longer than 0"
         self._length = length
         self._value_type = to_serializer(value)
+        assert length > 0, "Array must be longer than 0"
 
     def write(self, f, value):
         assert (

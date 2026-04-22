@@ -13,6 +13,6 @@ requires-python = ">=3.14"
 [project.urls]
 Home = "https://nnilky.site"
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = ["black>=26.1.0", "pytest>=9.0.2"]
-docs = ["black", "mkdocs", "mkdocs-material", "mkdocstrings[crystal,python]"]
+docs = ["black>=26.1.0", "mkdocs", "mkdocs-material", "mkdocstrings[crystal,python]"]

@@ -1,25 +1,25 @@
 import typing as t
-from structo import uint16_LE, uint32_LE, Struct, Literal, Buffer
+import structo as st
 
 
-class WavHeader(Struct):
-    chunk_id: t.Annotated[str, Literal(b"RIFF")]
-    file_size: t.Annotated[int, uint32_LE]
-    format: t.Annotated[str, Literal(b"WAVE")]
+class RiffHeader(st.Struct):
+    chunk_id: t.Annotated[str, st.Literal(b"RIFF")]
+    file_size: t.Annotated[int, st.uint32_LE]
+    format: t.Annotated[str, st.Literal(b"WAVE")]
 
 
-class ChunkHeader(Struct):
-    id: t.Annotated[str, Buffer(4)]
-    size: t.Annotated[int, uint32_LE]
+class ChunkHeader(st.Struct):
+    id: t.Annotated[str, st.Buffer(4)]
+    size: t.Annotated[int, st.uint32_LE]
 
 
-class WavInfoChunk(Struct):
-    audio_format: t.Annotated[int, uint16_LE]
-    num_channels: t.Annotated[int, uint16_LE]
-    sample_rate: t.Annotated[int, uint32_LE]
-    byte_range: t.Annotated[int, uint32_LE]
-    block_align: t.Annotated[int, uint16_LE]
-    bits_per_sample: t.Annotated[int, uint16_LE]
+class WavInfoChunk(st.Struct):
+    audio_format: t.Annotated[int, st.uint16_LE]
+    num_channels: t.Annotated[int, st.uint16_LE]
+    sample_rate: t.Annotated[int, st.uint32_LE]
+    byte_range: t.Annotated[int, st.uint32_LE]
+    block_align: t.Annotated[int, st.uint16_LE]
+    bits_per_sample: t.Annotated[int, st.uint16_LE]
 
 
 def read_wav_file(f: t.IO) -> tuple[WavInfoChunk, bytes]:

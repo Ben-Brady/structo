@@ -30,10 +30,12 @@ class Serializer[T]:
         return None
 
     def write(self, f: t.IO[bytes], value: T):
+        "Writes a value"
         raise NotImplementedError(f"{type(self).__name__} can't be serialized")
 
     def read(self, f: t.IO[bytes]) -> T:
-        raise NotImplementedError(f"{type(self).__name__} can't be deserialized")
+        raise NotImplementedError(
+            f"{type(self).__name__} can't be deserialized")
 
     def to_bytes(self, value: T) -> bytes:
         buf = io.BytesIO()
@@ -44,5 +46,6 @@ class Serializer[T]:
     def from_bytes(self, data: bytes) -> T:
         buf = io.BytesIO(data)
         value = self.read(buf)
-        assert buf.tell() == len(data), f"expected {buf.tell()} bytes, received {len(data)} bytes"
+        assert buf.tell() == len(data), (
+            f"expected {buf.tell()} bytes, received {len(data)} bytes")
         return value
