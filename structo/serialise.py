@@ -7,29 +7,31 @@ def to_serializer[T](format: type[T] | Serializer[T]) -> Serializer[T]:
         return format
 
     if isinstance(format, type) and issubclass(format, Serializable):
-        return format.serializer()
+        return format._cached_serializer()
 
     raise AssertionError(f"Invalid value_type: {format}")
 
 
-serializable_cache: dict[type[Serializable], Serializer] = {}
+serializer_cache: dict[int, Serializer] = {}
 
 
 def get_serializer(format: type | Serializer) -> Serializer:
+    cache_key = id(format)
+    if cache_key in serializer_cache:
+        return serializer_cache[cache_key]
+
     if t.get_origin(format) is t.Annotated:
         args = t.get_args(format)
         serializers = [arg for arg in args if isinstance(arg, Serializer)]
         assert len(serializers) != 0, f"No serializers for {format} found"
         assert len(serializers) == 1, f"More than one serializers for {format} found"
         serializer = serializers[0]
-
+        serializer_cache[cache_key] = serializer
         return serializer
 
     if isinstance(format, type) and issubclass(format, Serializable):
-        if format not in serializable_cache:
-            serializable_cache[format] = format.serializer()
-
-        return serializable_cache[format]
+        serializer_cache[cache_key] = format._cached_serializer()
+        return serializer_cache[cache_key]
 
     # Nicely formatted errors:
     if format == int:

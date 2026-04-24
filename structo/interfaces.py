@@ -1,28 +1,39 @@
 import io
+import types
 import typing as t
 
 
 class Serializable:
+
     @classmethod
     def serializer(cls) -> Serializer[t.Self]: ...
 
+    _serializer: types.EllipsisType | Serializer[t.Self] = ...
+
+    @classmethod
+    def _cached_serializer(cls) -> Serializer[t.Self]:
+        if cls._serializer is ...:
+            cls._serializer = cls.serializer()
+
+        return cls._serializer
+
     @classmethod
     def sizeof(cls) -> int | None:
-        return cls.serializer().sizeof()
+        return cls._cached_serializer().sizeof()
 
     def write(self, f: t.IO[bytes]):
-        return self.serializer().write(f, self)
+        return self._cached_serializer().write(f, self)
 
     @classmethod
     def read(cls, f: t.IO[bytes]) -> t.Self:
-        return cls.serializer().read(f)
+        return cls._cached_serializer().read(f)
 
     def to_bytes(self) -> bytes:
-        return self.serializer().to_bytes(self)
+        return self._cached_serializer().to_bytes(self)
 
     @classmethod
     def from_bytes(cls, data: bytes) -> t.Self:
-        return cls.serializer().from_bytes(data)
+        return cls._cached_serializer().from_bytes(data)
 
 
 class Serializer[T]:
@@ -34,8 +45,7 @@ class Serializer[T]:
         raise NotImplementedError(f"{type(self).__name__} can't be serialized")
 
     def read(self, f: t.IO[bytes]) -> T:
-        raise NotImplementedError(
-            f"{type(self).__name__} can't be deserialized")
+        raise NotImplementedError(f"{type(self).__name__} can't be deserialized")
 
     def to_bytes(self, value: T) -> bytes:
         buf = io.BytesIO()
@@ -46,6 +56,11 @@ class Serializer[T]:
     def from_bytes(self, data: bytes) -> T:
         buf = io.BytesIO(data)
         value = self.read(buf)
-        assert buf.tell() == len(data), (
-            f"expected {buf.tell()} bytes, received {len(data)} bytes")
+        assert buf.tell() == len(
+            data
+        ), f"expected {buf.tell()} bytes, received {len(data)} bytes"
         return value
+
+
+def using_db():
+    import db  # to prevent cirulat imports

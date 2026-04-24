@@ -6,6 +6,7 @@ from ..interfaces import Serializer
 class String(Serializer[str]):
     "A unicode string, prefixed with it's byte length"
 
+    __slots__ = ("_length_type",)
     _length_type: Serializer[int]
 
     def __init__(self, length_type: Serializer[int] | None = None) -> None:

@@ -3,6 +3,7 @@ from ..interfaces import Serializer
 
 
 class Int(Serializer[int]):
+    __slots__ = ("bytes", "byteorder", "signed")
     bytes: int
     byteorder: t.Literal['little', 'big']
     signed: bool
@@ -23,7 +24,10 @@ class Int(Serializer[int]):
 
     def write(self, f, value):
         data = value.to_bytes(
-            self.bytes, byteorder=self.byteorder, signed=self.signed)
+            length=self.bytes,
+            byteorder=self.byteorder,
+            signed=self.signed
+        )
         return f.write(data)
 
     def read(self, f):
