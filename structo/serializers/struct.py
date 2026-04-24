@@ -22,14 +22,13 @@ class StructMeta(type):
             try:
                 fields[key] = get_serializer(annotation)
             except Exception as e:
-                raise ValueError(
-                    f"Invalid attribute defintion for {name}.{key}") from e
+                raise ValueError(f"Invalid attribute defintion for {name}.{key}") from e
 
         return t.cast(Struct, dataclass(new_class))
 
 
 # This is very messed up since we
-@t.dataclass_transform()
+@t.dataclass_transform(kw_only_default=True)
 class Struct(Serializable, metaclass=StructMeta):
     @classmethod
     def serializer(cls) -> Serializer[t.Self]:
