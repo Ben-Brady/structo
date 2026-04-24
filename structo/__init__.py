@@ -39,6 +39,7 @@ from .serializers import (
     Buffer,
     List,
     String,
+    CString,
     Blob,
     Literal,
     Optional,

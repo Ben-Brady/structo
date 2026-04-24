@@ -34,6 +34,7 @@ from .array import Array
 from .blob import Blob
 from .list import List
 from .string import String
+from .cstring import CString
 from .literal import Literal
 from .optional import Optional
 from .lazylist import LazyList
