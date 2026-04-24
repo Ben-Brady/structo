@@ -1,4 +1,4 @@
-from .ints import uint32_LE
+from ..core.ints import uint32_LE
 from ..serialise import to_serializer
 from ..interfaces import Serializer
 

@@ -6,7 +6,7 @@ __version__ = "0.0.15"
 
 from .interfaces import Serializer, Serializable
 from .serialise import get_serializer
-from .serializers import (
+from .core import (
     uint64_BE,
     uint64_LE,
     uint64,
@@ -33,18 +33,18 @@ from .serializers import (
     float32_BE,
     float32_LE,
     float32,
-
     Int,
     Array,
     Buffer,
+    Literal,
+    Struct,
+    PackedBits,
+    Bits,
+)
+from .utils import (
     List,
     String,
     CString,
     Blob,
-    Literal,
     Optional,
-    LazyList,
-    Struct,
-    Bits,
-    PackedBits
 )

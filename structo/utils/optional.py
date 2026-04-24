@@ -3,7 +3,7 @@ from ..serialise import to_serializer
 
 
 NONE_TYPE_BYTE = bytes([0])
-VALUE_TYPE_BYTE = bytes([255])
+VALUE_TYPE_BYTE = bytes([1])
 
 
 class Optional[T](Serializer[T | None]):

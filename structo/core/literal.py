@@ -6,7 +6,7 @@ class Literal(Serializer[bytes]):
     _length: int
 
     def __init__(self, *values: bytes) -> None:
-        assert len(values) > 0, "foo"
+        assert len(values) > 0, "Must specify at least one value for structo.Literal"
         length = len(values[0])
 
         for value in values:
