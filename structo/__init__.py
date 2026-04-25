@@ -2,7 +2,7 @@
 Structify handles serialising and deserialising binary files
 """
 
-__version__ = "0.0.15"
+__version__ = "0.0.16"
 
 from .interfaces import Serializer, Serializable
 from .serialise import get_serializer
