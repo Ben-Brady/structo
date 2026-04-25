@@ -25,4 +25,10 @@ class String(Serializer[str]):
     def read(self, f):
         length = self._length_type.read(f)
         data = f.read(length)
+        if len(data) != length:
+            raise ValueError(
+                f"expected data with length {length}, "  # ------------
+                f"received {len(data)}"
+            )
+
         return data.decode("utf-8")

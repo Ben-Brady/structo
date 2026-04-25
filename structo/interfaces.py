@@ -6,7 +6,8 @@ import typing as t
 class Serializable:
 
     @classmethod
-    def serializer(cls) -> Serializer[t.Self]: ...
+    def serializer(cls) -> Serializer[t.Self]:
+        raise NotImplementedError(f"serializer() not implemented for {cls}")
 
     _serializer: types.EllipsisType | Serializer[t.Self] = ...
 
@@ -56,11 +57,10 @@ class Serializer[T]:
     def from_bytes(self, data: bytes) -> T:
         buf = io.BytesIO(data)
         value = self.read(buf)
-        assert buf.tell() == len(
-            data
-        ), f"expected {buf.tell()} bytes, received {len(data)} bytes"
+
+        all_read = buf.tell()
+        if all_read != len(data):
+            # TODO: Test
+            raise ValueError(f"{len(data) - all_read} bytes left unread")
+
         return value
-
-
-def using_db():
-    import db  # to prevent cirulat imports

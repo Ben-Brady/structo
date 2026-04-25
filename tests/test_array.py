@@ -17,7 +17,7 @@ def _():
     class Object(st.Struct):
         bits: t.Annotated[list[Bits], st.Array(Bits, 2)]
 
-    obj = Object(bits=[Bits(1), Bits(2)])
+    obj = Object(bits=[Bits(a=1), Bits(a=2)])
     assert obj == Object.from_bytes(obj.to_bytes())
 
 

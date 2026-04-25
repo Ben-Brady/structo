@@ -24,7 +24,9 @@ class PackedBitsMeta(type):
 
         annotations = annotate(annotationlib.Format.VALUE_WITH_FAKE_GLOBALS)
 
-        bits: dict[str, int] = {}
+        obj = dataclass(new_class, kw_only=True)
+
+        obj._bits = {}
         for key, value in annotations.items():
             err_msg = f"expected Annotated[int, PackedInt(...)] on {name}.{key}"
             assert t.get_origin(value) is t.Annotated, err_msg
@@ -32,14 +34,12 @@ class PackedBitsMeta(type):
             ints = [arg for arg in t.get_args(value) if isinstance(arg, Bits)]
             assert len(ints) <= 1, err_msg
             assert len(ints) == 1, err_msg
-            bits[key] = ints[0].bits
+            obj._bits[key] = ints[0].bits
 
-        obj = t.cast(PackedBits, dataclass(new_class))
-        obj._bits = bits
         return obj
 
 
-@t.dataclass_transform()
+@t.dataclass_transform(kw_only_default=True)
 class PackedBits(Serializable, metaclass=PackedBitsMeta):
     _bits: dict[str, int]
 
@@ -65,27 +65,28 @@ class PackedBitsSerializer[T: PackedBits](Serializer[T]):
             field_value = getattr(value, field_key)
 
             max_value = (2**bits) - 1
+            if field_value < 0:
+                raise ValueError("Cannot serialize negative values")
+            if field_value > max_value:
+                raise ValueError(
+                    f"{self._cls.__name__}{field_key} exceed max value, "
+                    f"{field_value} > {max_value}"
+                )
 
-            assert field_value >= 0, "Cannot serialize negative values"
-            assert (
-                field_value <= max_value
-            ), f"{self._cls.__name__}{field_key} exceed max value, {field_value} > {max_value}"
             output += field_value << offset
             offset += bits
 
-        data = bytearray(self._size)
-        for x in range(self._size):
-            byte = output & 255
-            output >>= 8
-            data[x] = byte
-
+        data = bytes([
+            (output >> (8 * x)) & 255  # -----------------------
+            for x in range(self._size)
+        ])
         f.write(data)
 
     def read(self, f):
         data = f.read(self._size)
         integer = int.from_bytes(data, "little")
-        attrs: dict[str, t.Any] = {}
 
+        attrs: dict[str, t.Any] = {}
         offset = 0
         for field_key, bits in self._bits.items():
 

@@ -33,22 +33,22 @@ def get_serializer(format: type | Serializer) -> Serializer:
         serializer_cache[cache_key] = format._cached_serializer()
         return serializer_cache[cache_key]
 
-    # Nicely formatted errors:
+    # Nicely formatted errors
     if format == int:
         raise ValueError(
-            f"No serializer for int, you need to use structo.int32, structo.int32 or similar instead"
+            f"No serializer for int, you need to use Annotated[int, structo.int64] instead"
         )
     if format == float:
         raise ValueError(
-            f"No serializer for float, you need to use structo.float32 or structo.float64 instead"
+            f"No serializer for float, you need to use Annotated[int, structo.float64] instead"
         )
     if format == bytes:
         raise ValueError(
-            f"No serializer for bytes, you need to use structo.Buffer or structo.Blob instead"
+            f"No serializer for bytes, you need to use Annotated[bytes structo.Blob] instead"
         )
     if format == list:
         raise ValueError(
-            f"No serializer for list, you need to use structo.List or structo.Array instead"
+            f"No serializer for list, you need to use Annotated[list, structo.List] instead"
         )
 
     raise NotImplementedError(f"No serializer found for {format}")

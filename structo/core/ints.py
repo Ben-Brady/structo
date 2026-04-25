@@ -33,6 +33,13 @@ class Int(Serializer[int]):
     def read(self, f):
         data = f.read(self.bytes)
         assert len(data) == self.bytes, f"Expected {self.bytes} bytes"
+
+        if len(data) != self.bytes:
+            raise ValueError(
+                f"expected data with length {self.bytes}, "  # ------------
+                f"received {len(data)}"
+            )
+
         return int.from_bytes(data, byteorder=self.byteorder, signed=self.signed)
 
 

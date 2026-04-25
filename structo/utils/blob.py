@@ -17,4 +17,11 @@ class Blob(Serializer[bytes]):
     def read(self, f):
         length = self._length.read(f)
         data = f.read(length)
+
+        if len(data) != length:
+            raise ValueError(
+                f"expected data with length {length}, "  # ------------
+                f"received {len(data)}"
+            )
+
         return data

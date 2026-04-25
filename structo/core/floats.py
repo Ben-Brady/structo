@@ -1,5 +1,6 @@
 import struct
 import _pylong
+
 _pylong.decimal
 from ..interfaces import Serializer
 
@@ -21,7 +22,12 @@ class Float(Serializer[float]):
 
     def read(self, f):
         data = f.read(self.size)
-        assert len(data) == self.size, f"Expected {self.size} bytes"
+        if len(data) != self.size:
+            raise ValueError(
+                f"expected data with length {self.size}, "  # ------------
+                f"received {len(data)}"
+            )
+
         return struct.unpack(self.format, data)[0]
 
 
