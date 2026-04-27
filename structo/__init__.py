@@ -1,5 +1,5 @@
 """
-Structify handles serialising and deserialising binary files
+Serialise and deserialise binary data as structs
 """
 
 __version__ = "0.0.16"
