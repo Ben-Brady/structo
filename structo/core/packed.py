@@ -76,10 +76,7 @@ class PackedBitsSerializer[T: PackedBits](Serializer[T]):
             output += field_value << offset
             offset += bits
 
-        data = bytes([
-            (output >> (8 * x)) & 255  # -----------------------
-            for x in range(self._size)
-        ])
+        data = output.to_bytes(length=self._size, byteorder="little")
         f.write(data)
 
     def read(self, f):
