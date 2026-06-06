@@ -22,6 +22,7 @@ class StructMeta(type):
             try:
                 fields[key] = get_serializer(annotation)
             except Exception as e:
+                print(e)
                 raise ValueError(f"Invalid attribute defintion for {name}.{key}") from e
 
         return t.cast(Struct, dataclass(new_class))

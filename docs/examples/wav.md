@@ -1,4 +1,4 @@
-# Wav File 
+# Wav File
 
 
 ```
@@ -9,22 +9,22 @@ from structo import uint16_LE, uint32_LE, SerializableObject, Literal
 
 class WavHeader(SerializableObject):
     chunk_id: Annotated[bytes, Literal(b"RIFF")]
-    chunk_size: Annotated[int, uint32_LE]
+    chunk_size: u32_LE
     format: Annotated[bytes, Literal(b"WAVE")]
 
 
 class ChunkHeader(SerializableObject):
     id: Annotated[bytes, Literal(b"fmt ", b"data")]
-    size: Annotated[int, uint32_LE]
+    size: u32_LE
 
 
 class WavFormat(SerializableObject):
-    audio_format: Annotated[int, uint16_LE]
-    num_channels: Annotated[int, uint16_LE]
-    sample_rate: Annotated[int, uint32_LE]
-    byte_range: Annotated[int, uint32_LE]
-    block_align: Annotated[int, uint16_LE]
-    bits_per_sample: Annotated[int, uint16_LE]
+    audio_format: u16_LE
+    num_channels: u16_LE
+    sample_rate: u32_LE
+    byte_range: u32_LE
+    block_align: u16_LE
+    bits_per_sample: u16_LE
 
 
 def read_wav_file(f: io.Reader) -> tuple[WavFormat, bytes]:

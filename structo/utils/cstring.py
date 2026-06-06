@@ -1,5 +1,3 @@
-import typing as t
-from ..core.ints import uint32_LE
 from ..interfaces import Serializer
 
 NULL = bytes([0])

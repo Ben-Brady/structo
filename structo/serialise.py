@@ -1,28 +1,29 @@
 import typing as t
-from .interfaces import Serializer, Serializable
+from .interfaces import Serializer, Serializable, SerializerType
+
+serializer_cache: dict[int, Serializer[t.Any]] = {}
 
 
-def to_serializer[T](format: type[T] | Serializer[T]) -> Serializer[T]:
-    if isinstance(format, Serializer):
-        return format
-
-    if isinstance(format, type) and issubclass(format, Serializable):
-        return format._cached_serializer()
-
-    raise AssertionError(f"Invalid value_type: {format}")
-
-
-serializer_cache: dict[int, Serializer] = {}
-
-
-def get_serializer(format: type | Serializer) -> Serializer:
+def get_serializer[T](format: SerializerType[T]) -> Serializer[T]:
     cache_key = id(format)
     if cache_key in serializer_cache:
         return serializer_cache[cache_key]
 
+    if isinstance(format, t.TypeAliasType):
+        format = format.__value__
+
+    if isinstance(format, Serializer):
+        return format
+
     if t.get_origin(format) is t.Annotated:
         args = t.get_args(format)
-        serializers = [arg for arg in args if isinstance(arg, Serializer)]
+        serializers = []
+        for arg in args:
+            try:
+                serializers.append(get_serializer(arg))
+            except:
+                pass
+
         assert len(serializers) != 0, f"No serializers for {format} found"
         assert len(serializers) == 1, f"More than one serializers for {format} found"
         serializer = serializers[0]

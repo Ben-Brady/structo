@@ -19,18 +19,22 @@ class FloatDescriptor:
 float_descriptors: list[FloatDescriptor] = []
 
 
-def declare_float(serializer: st.Serializer, *, format: str, size: int):
+def declare_float(serializer: st.SerializerType, *, format: str, size: int):
     float_descriptors.append(
-        FloatDescriptor(size=size, serializer=serializer, struct_format=format)
+        FloatDescriptor(
+            size=size,
+            serializer=st.get_serializer(serializer),
+            struct_format=format,
+        )
     )
 
 
-declare_float(st.float32, format="<f", size=4)
-declare_float(st.float32_LE, format="<f", size=4)
-declare_float(st.float32_BE, format=">f", size=4)
-declare_float(st.float64, format="<d", size=8)
-declare_float(st.float64_LE, format="<d", size=8)
-declare_float(st.float64_BE, format=">d", size=8)
+declare_float(st.f32, format="<f", size=4)
+declare_float(st.f32_LE, format="<f", size=4)
+declare_float(st.f32_BE, format=">f", size=4)
+declare_float(st.f64, format="<d", size=8)
+declare_float(st.f64_LE, format="<d", size=8)
+declare_float(st.f64_BE, format=">d", size=8)
 
 
 float_ids = [type(d.serializer).__name__ for d in float_descriptors]

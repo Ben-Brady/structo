@@ -1,17 +1,21 @@
-from ..core.ints import uint32_LE
-from ..serialise import to_serializer
-from ..interfaces import Serializer
+from ..core.ints import u32
+from ..serialise import get_serializer
+from ..interfaces import Serializer, SerializerType
 
 
 class List[T](Serializer[list[T]]):
     "A list of items, prefixed with it's length"
 
     _length: Serializer[int]
-    _value: Serializer
+    _value: Serializer[T]
 
-    def __init__(self, value: Serializer[T] | type[T], length: Serializer[int] = uint32_LE) -> None:
-        self._length = length
-        self._value = to_serializer(value)
+    def __init__(
+        self,
+        value: SerializerType[T],
+        length: SerializerType[int] = u32,
+    ) -> None:
+        self._length = get_serializer(length)
+        self._value = get_serializer(value)
 
     def write(self, f, value):
         length = len(value)

@@ -6,7 +6,7 @@ import pytest
 
 @test("Array: sizeof")
 def _():
-    assert st.Array(st.int8, 4).sizeof() == 4
+    assert st.Array(st.i8, 4).sizeof() == 4
 
 
 @test("Array: PackedInts")
@@ -24,7 +24,7 @@ def _():
 @test("Array: regular example")
 def _():
     class Foo(st.Struct):
-        a: t.Annotated[list[int], st.Array(st.uint8, 3)]
+        a: t.Annotated[list[int], st.Array(st.u8, 3)]
 
     obj = Foo(a=[1, 2, 3])
     assert obj == Foo.from_bytes(obj.to_bytes())
@@ -33,7 +33,7 @@ def _():
 @test("Array: too little values")
 def _():
     class Foo(st.Struct):
-        a: t.Annotated[list[int], st.Array(st.uint8, length=3)]
+        a: t.Annotated[list[int], st.Array(st.u8, length=3)]
 
     with pytest.raises(Exception):
         Foo(a=[1, 2]).to_bytes()
@@ -42,7 +42,7 @@ def _():
 @test("Array: too many values")
 def _():
     class Foo(st.Struct):
-        a: t.Annotated[list[int], st.Array(st.uint8, length=3)]
+        a: t.Annotated[list[int], st.Array(st.u8, length=3)]
 
     with pytest.raises(Exception):
         Foo(a=[1, 2, 3, 4]).to_bytes()

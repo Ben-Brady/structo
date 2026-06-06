@@ -8,7 +8,7 @@ import structo as st
 @test("List: regular example")
 def _():
     class Foo(st.Struct):
-        a: t.Annotated[list[int], st.List(st.uint8)]
+        a: t.Annotated[list[int], st.List(st.u8)]
 
     obj = Foo(a=[1, 2, 3])
     assert obj == Foo.from_bytes(obj.to_bytes())
@@ -17,7 +17,8 @@ def _():
 @test("List: over max size")
 def _():
     class Foo(st.Struct):
-        a: t.Annotated[list[int], st.List(st.uint8, length=st.uint8)]
+        a: t.Annotated[list[int], st.List(st.u8, length=st.u8)]
+
     with pytest.raises(Exception):
         Foo(a=[1] * 300).to_bytes()
 

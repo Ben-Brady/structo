@@ -1,14 +1,14 @@
-from ..serialise import to_serializer
-from ..interfaces import Serializer
+from ..serialise import get_serializer
+from ..interfaces import Serializer, SerializerType
 
 
 class Array[T](Serializer[list[T]]):
     _length: int
     _value_type: Serializer[T]
 
-    def __init__(self, value: Serializer[T] | type[T], length: int) -> None:
+    def __init__(self, value: SerializerType[T], length: int) -> None:
         self._length = length
-        self._value_type = to_serializer(value)
+        self._value_type = get_serializer(value)
         assert length > 0, "Array must be longer than 0"
 
     def write(self, f, value):

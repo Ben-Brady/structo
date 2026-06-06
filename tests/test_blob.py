@@ -7,7 +7,7 @@ import io
 
 @test("Blob: sizeof")
 def _():
-    assert st.Blob(st.int8).sizeof() == None
+    assert st.Blob(st.i8).sizeof() == None
 
 
 @test("Blob: basic")

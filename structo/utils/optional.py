@@ -1,6 +1,5 @@
-from ..interfaces import Serializer
-from ..serialise import to_serializer
-
+from ..interfaces import Serializer, SerializerType
+from ..serialise import get_serializer
 
 NONE_TYPE_BYTE = bytes([0])
 VALUE_TYPE_BYTE = bytes([1])
@@ -9,8 +8,8 @@ VALUE_TYPE_BYTE = bytes([1])
 class Optional[T](Serializer[T | None]):
     _value_type: Serializer[T]
 
-    def __init__(self, value: Serializer[T] | type[T]) -> None:
-        self._value_type = to_serializer(value)
+    def __init__(self, value: SerializerType[T]) -> None:
+        self._value_type = get_serializer(value)
 
     def write(self, f, value):
         if value is None:
@@ -31,4 +30,3 @@ class Optional[T](Serializer[T | None]):
             return None
         else:
             return self._value_type.read(f)
-

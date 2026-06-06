@@ -1,7 +1,7 @@
 import typing as t
-from ..core.ints import uint32_LE
-from ..interfaces import Serializer
-
+from ..core.ints import u32
+from ..interfaces import Serializer, SerializerType
+from ..serialise import get_serializer
 
 class String(Serializer[str]):
     "A unicode string, prefixed with it's byte length"
@@ -9,13 +9,13 @@ class String(Serializer[str]):
     __slots__ = ("_length_type",)
     _length_type: Serializer[int]
 
-    def __init__(self, length_type: Serializer[int] | None = None) -> None:
+    def __init__(self, length_type: SerializerType[int] | None = None) -> None:
         """_summary_
 
         Args:
             length_type (Serializer[int], optional): Defaults to uint32_LE
         """
-        self._length_type = length_type or uint32_LE
+        self._length_type = get_serializer(length_type or u32)
 
     def write(self, f, value):
         data = value.encode("utf-8")

@@ -37,6 +37,9 @@ class Serializable:
         return cls._cached_serializer().from_bytes(data)
 
 
+type SerializerType[T] = Serializer[T] | t.Annotated | Serializable
+
+
 class Serializer[T]:
     def sizeof(self) -> int | None:
         return None

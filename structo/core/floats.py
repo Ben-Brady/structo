@@ -1,7 +1,6 @@
+import typing as t
 import struct
-import _pylong
 
-_pylong.decimal
 from ..interfaces import Serializer
 
 
@@ -31,17 +30,17 @@ class Float(Serializer[float]):
         return struct.unpack(self.format, data)[0]
 
 
-float64: Serializer[float] = Float(format="<d", size=8)
+type f64 = t.Annotated[float, Float(format="<d", size=8)]
 "**64bit float - little endian**"
-float64_LE: Serializer[float] = Float(format="<d", size=8)
+type f64_LE = t.Annotated[float, Float(format="<d", size=8)]
 "**64bit float - little endian**"
-float64_BE: Serializer[float] = Float(format=">d", size=8)
+type f64_BE = t.Annotated[float, Float(format=">d", size=8)]
 "**64bit float - big endian**"
 
 
-float32: Serializer[float] = Float(format="<f", size=4)
+type f32 = t.Annotated[float, Float(format="<f", size=4)]
 "**32bit float - little endian**"
-float32_LE: Serializer[float] = Float(format="<f", size=4)
+type f32_LE = t.Annotated[float, Float(format="<f", size=4)]
 "**32bit float - little endian**"
-float32_BE: Serializer[float] = Float(format=">f", size=4)
+type f32_BE = t.Annotated[float, Float(format=">f", size=4)]
 "**32bit float - big endian**"

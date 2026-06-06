@@ -21,68 +21,75 @@ int_descriptors: list[IntDescriptor] = []
 
 
 def declare_int(
-    serializer: st.Serializer,
+    serializer: st.SerializerType,
     *,
     format: str,
     range: tuple[int, int],
     size: int,
 ):
-    int_descriptors.append(IntDescriptor(size, serializer, format, range))
+    int_descriptors.append(
+        IntDescriptor(
+            size,
+            st.get_serializer(serializer),
+            format,
+            range,
+        )
+    )
 
 
-declare_int(st.uint8, format="B", range=(0, 255), size=1)
+declare_int(st.u8, format="B", range=(0, 255), size=1)
 
-declare_int(st.uint16, format="<H", range=(0, 65_535), size=2)
-declare_int(st.uint16_LE, format="<H", range=(0, 65_535), size=2)
-declare_int(st.uint16_BE, format=">H", range=(0, 65_535), size=2)
+declare_int(st.u16, format="<H", range=(0, 65_535), size=2)
+declare_int(st.u16_LE, format="<H", range=(0, 65_535), size=2)
+declare_int(st.u16_BE, format=">H", range=(0, 65_535), size=2)
 
-declare_int(st.uint32, format="<I", range=(0, 4_294_967_295), size=4)
-declare_int(st.uint32_LE, format="<I", range=(0, 4_294_967_295), size=4)
-declare_int(st.uint32_BE, format=">I", range=(0, 4_294_967_295), size=4)
+declare_int(st.u32, format="<I", range=(0, 4_294_967_295), size=4)
+declare_int(st.u32_LE, format="<I", range=(0, 4_294_967_295), size=4)
+declare_int(st.u32_BE, format=">I", range=(0, 4_294_967_295), size=4)
 
-declare_int(st.uint64, format="<Q", range=(0, 18_446_744_073_709_551_615), size=8)
-declare_int(st.uint64_LE, format="<Q", range=(0, 18_446_744_073_709_551_615), size=8)
-declare_int(st.uint64_BE, format=">Q", range=(0, 18_446_744_073_709_551_615), size=8)
+declare_int(st.u64, format="<Q", range=(0, 18_446_744_073_709_551_615), size=8)
+declare_int(st.u64_LE, format="<Q", range=(0, 18_446_744_073_709_551_615), size=8)
+declare_int(st.u64_BE, format=">Q", range=(0, 18_446_744_073_709_551_615), size=8)
 
-declare_int(st.int8, format="b", range=(-128, 127), size=1)
+declare_int(st.i8, format="b", range=(-128, 127), size=1)
 
-declare_int(st.int16, format="<h", range=(-32_768, 32_767), size=2)
-declare_int(st.int16_LE, format="<h", range=(-32_768, 32_767), size=2)
-declare_int(st.int16_BE, format=">h", range=(-32_768, 32_767), size=2)
+declare_int(st.i16, format="<h", range=(-32_768, 32_767), size=2)
+declare_int(st.i16_LE, format="<h", range=(-32_768, 32_767), size=2)
+declare_int(st.i16_BE, format=">h", range=(-32_768, 32_767), size=2)
 
 declare_int(
-    st.int32,
+    st.i32,
     format="<i",
     range=(-2_147_483_648, 2_147_483_647),
     size=4,
 )
 declare_int(
-    st.int32_LE,
+    st.i32_LE,
     format="<i",
     range=(-2_147_483_648, 2_147_483_647),
     size=4,
 )
 declare_int(
-    st.int32_BE,
+    st.i32_BE,
     format=">i",
     range=(-2_147_483_648, 2_147_483_647),
     size=4,
 )
 
 declare_int(
-    st.int64,
+    st.i64,
     format="<q",
     range=(-9_223_372_036_854_775_808, 9_223_372_036_854_775_807),
     size=8,
 )
 declare_int(
-    st.int64_LE,
+    st.i64_LE,
     format="<q",
     range=(-9_223_372_036_854_775_808, 9_223_372_036_854_775_807),
     size=8,
 )
 declare_int(
-    st.int64_BE,
+    st.i64_BE,
     format=">q",
     range=(-9_223_372_036_854_775_808, 9_223_372_036_854_775_807),
     size=8,

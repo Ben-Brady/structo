@@ -6,7 +6,7 @@ They are a extended dataclass that uses `typing.Annotated` to describe what type
 
 ```py
 class User(st.Struct):
-    id: Annotated[int, st.uint32_LE]
+    id: st.u32
     name: Annotated[str, st.String()]
     tags: Annotated[list[str], st.List(st.String())]
 ```
